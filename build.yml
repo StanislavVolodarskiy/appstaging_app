@@ -1,27 +1,23 @@
 #sdk: "/Users/sv/.rvm/gems/ruby-1.9.3-p374/gems/rhodes-4.2.0.beta.13"
-sdkversion: 4.1.0
-name: appstaging_app
+sdkversion: "4.2.0"
+name: "appstaging_app"
 version: 1.0
-vendor: rhomobile
-build: debug
-applog: rholog.txt
+vendor: "rhomobile"
+build: "debug"
+applog: "rholog.txt"
 iphone:
-  configuration: Release
-  sdk: iphonesimulator7.0
-  provisionprofile:
-  codesignidentity: iPhone Developer
-  entitlements: ""
-  BundleIdentifier: com.rhomobile.appstagingapp
-  BundleURLScheme: appstagingapp
+  configuration: "Release"
+  sdk: "iphonesimulator7.0"
+  provisionprofile: 
+  codesignidentity: "iPhone Developer"
+  entitlements: 
+  BundleIdentifier: "com.rhomobile.appstagingapp"
+  BundleURLScheme: "appstagingapp"
 wp8:
-  productid: '3c8abc20-c8a3-0131-0e3c-3c075403c5b4'
+  productid: "3c8abc20-c8a3-0131-0e3c-3c075403c5b4"
 android:
-  manifest_template: 'AndroidManifest.erb'
-  version: 4.4.2
-
-
-wm:
-  #sdk: "MC3000c50b (ARMV4I)"
-  #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-
-extensions: ["rhoconnect-client"]
+  manifest_template: "AndroidManifest.erb"
+  version: "4.4.2"
+wm: 
+extensions:
+  - rhoconnect-client
