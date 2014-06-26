@@ -14,8 +14,8 @@ iphone:
   provisionprofile: "Mikhail Dev"
   codesignidentity: iPhone Developer
   entitlements: ""
-  BundleIdentifier: com.rhomobile.mytestapp
-  BundleURLScheme: mytestapp
+  BundleIdentifier: com.rhomobile.appstaging_app
+  BundleURLScheme: appstaging_app
   production:
     mobileprovision_file: "./production/Mikhail_Dev.mobileprovision"
     certificate_file: "./production/certs.p12"
