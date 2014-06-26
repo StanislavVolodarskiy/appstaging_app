@@ -1,6 +1,7 @@
 #sdk: "/Users/sv/.rvm/gems/ruby-1.9.3-p374/gems/rhodes-4.2.0.beta.13"
+
 sdkversion: "4.2.0"
-app_type: rhoelements
+app_type: "rhoelements"
 name: "appstaging_app"
 version: 1.0
 vendor: "rhomobile"
@@ -14,11 +15,12 @@ iphone:
   entitlements: 
   BundleIdentifier: "com.rhomobile.appstagingapp"
   BundleURLScheme: "appstagingapp"
+  emulatortarget: "iphone"
 wp8:
   productid: "3c8abc20-c8a3-0131-0e3c-3c075403c5b4"
 android:
   manifest_template: "AndroidManifest.erb"
-  version: "4.4.2"
+  version: "2.2"
 wm: 
 extensions:
   - rhoconnect-client
