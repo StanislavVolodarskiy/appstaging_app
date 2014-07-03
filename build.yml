@@ -1,6 +1,3 @@
-#sdk: "/Users/sv/.rvm/gems/ruby-1.9.3-p374/gems/rhodes-4.2.0.beta.13"
-#aaaa
-
 sdkversion: "4.2.0"
 app_type: "rhoelements"
 name: "appstaging_app"
@@ -23,9 +20,44 @@ iphone:
 wp8:
   productid: "3c8abc20-c8a3-0131-0e3c-3c075403c5b4"
 android:
-  manifest_template: "AndroidManifest.erb"
-  version: "2.2"
-wm: 
+  extensions:
+    - barcode
+    - nfc
+    - digest
+    - digest-md5
+    - digest-sha1
+    - pdf-writer
+    - thread
+    - digest-sha2
+    - openssl.so
+    - openssl
+    - ezcrypto
+    - audiocapture
+  capabilities:
+    - network_state
+    - sdcard
+    - calendar
+  version: "4.2.2"
+wm:
+  extensions:
+    - digest
+    - digest-md5
+    - digest-sha1
+    - digest-sha2
+    - openssl.so
+    - openssl
+    - ezcrypto
+    - rhoconnect-client
 extensions:
+  - json
+  - rhoxml
   - rhoconnect-client
   - rhodes_translator
+capabilities:
+  - gps
+  - pim
+  - camera
+  - vibrate
+  - phone
+  - bluetooth
+  - calendar
