@@ -2,7 +2,7 @@
 #aaaa
 
 sdkversion: "4.2.0"
-#app_type: "rhoelements"
+app_type: "rhoelements"
 name: "appstaging_app"
 version: 1.0
 vendor: "rhomobile"
@@ -28,3 +28,4 @@ android:
 wm: 
 extensions:
   - rhoconnect-client
+  - rhodes_translator
