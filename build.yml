@@ -21,7 +21,7 @@ wp8:
   productid: "3c8abc20-c8a3-0131-0e3c-3c075403c5b4"
 android:
   abis:
-  - arm
+  - x86
   extensions:
     - barcode
     - nfc
