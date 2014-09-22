@@ -37,6 +37,7 @@ android:
     - ezcrypto
     - audiocapture
   capabilities:
+    - push
     - network_state
     - sdcard
     - calendar
