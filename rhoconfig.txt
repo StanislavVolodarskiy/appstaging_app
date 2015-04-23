@@ -1,6 +1,5 @@
 # startup page for your application
-start_path = '/app'
-#aaa
+start_path = '/app/index.html'
 
 # path to the options page (in this case handled by javascript)
 options_path = '/app/Settings'
@@ -15,6 +14,7 @@ rhobundle_zip_pwd = nil
 # log level
 # 0-trace, 1-info(app level), 2-warnings, 3-errors
 # for production set to 3
+LogFilePath = '/mnt/sdcard/comp_js.log'
 MinSeverity  = 1 
 
 # enable copy log messages to standard output, useful for debugging
@@ -40,7 +40,7 @@ MaxLogFileSize=50000
 logserver = 'http://rhologs.heroku.com' 
 
 # log file prefix - contain human-readable text
-logname='appstaging_app'
+logname='ComplianceTest_JS'
 
 # Keep track of the last visited page
 KeepTrackOfLastVisitedPage = 0 
@@ -58,9 +58,6 @@ sync_poll_interval=0
 # default 1 for Android up to Rhodes 2.2.5.
 # on all other platforms and on Android from Rhodes >2.2.5 default 0
 #full_screen = 1
-
-# show top menu on Windows desktop in full screen mode (default is 0=don't show top menu)
-#w32_fullscreen_menu = 1
 
 # disable the Android page loading progress bar
 #disable_loading_indication = 0

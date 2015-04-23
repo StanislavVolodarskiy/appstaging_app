@@ -1,67 +1,71 @@
-sdkversion: "5.0.2"
+sdkversion: "3.5.0"
+name: "compliancetest_js"
 app_type: "rhoelements"
-name: "appstaging_app"
-version: 1.0
+version: "1.0"
 vendor: "rhomobile"
-build: "debug"
+build: "release"
+bbver: "4.6"
 applog: "rholog.txt"
-iphone:
-  configuration: Release
-  sdk: iphonesimulator7.1
-  provisionprofile: "Mikhail Dev"
-  codesignidentity: iPhone Developer
-  entitlements: ""
-  BundleIdentifier: com.rhomobile.appstaging_app
-  BundleURLScheme: appstaging_app
-  production:
-    mobileprovision_file: "./production/Mikhail_Dev.mobileprovision"
-    certificate_file: "./production/certs.p12"
-    certificate_password: "mytestpassword"
-wp8:
-  productid: "3c8abc20-c8a3-0131-0e3c-3c075403c5b4"
-android:
-  abis:
-  - arm
-  - x86
-  extensions:
-    - barcode
-    - nfc
-    - digest
-    - digest-md5
-    - digest-sha1
-    - pdf-writer
-    - thread
-    - digest-sha2
-    - openssl.so
-    - openssl
-    - ezcrypto
-    - audiocapture
-  capabilities:
-    - push
-    - network_state
-    - sdcard
-    - calendar
-  version: "4.2.2"
-wm:
-  extensions:
-    - digest
-    - digest-md5
-    - digest-sha1
-    - digest-sha2
-    - openssl.so
-    - openssl
-    - ezcrypto
-    - rhoconnect-client
-extensions:
-  - json
-  - rhoxml
-  - rhoconnect-client
-  - rhodes_translator
 capabilities:
-  - gps
-  - pim
-  - camera
-  - vibrate
   - phone
-  - bluetooth
-  - calendar
+#  - read_sdcard
+#  - write_sdcard
+rhohub:
+  url: "https://appstaging.rhohub.com/api/v1/"
+connection:
+  proxy: "http://wwwgate0.mot.com:1080"
+iphone:
+  configuration: "Release"
+  sdk: iphonesimulator8.1
+  provisionprofile: 
+  codesignidentity: 
+  entitlements: 
+  BundleIdentifier: "com.rhomobile.compliancetestjs"
+  BundleURLScheme: "compliancetestjs"
+  extensions:
+   - rhoconnect-client
+   - audiocapture
+   - signature
+   - barcode
+   - indicators
+   - mediacapture
+   - mediaplayer
+   - screenorientation
+   - sensor
+   - printing
+   - printing_zebra
+wp:
+  productid: "88e69430-071c-0131-3d46-606720a825c8"
+symbian:
+  uid: "0xede7d59e"
+android:
+  version: "4.2.2"
+  manifest_template: AndroidManifest.erb
+  extensions:
+   - rhoconnect-client
+   - audiocapture
+   - signature
+   - barcode
+   - indicators
+   - cardreader
+   - mediacapture
+   - mediaplayer
+   - screenorientation
+   - sensor
+   - printing
+   - printing_zebra
+wm:
+#sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+ #sdk: "MC3000c50b (ARMV4I)"
+  extensions:
+    - rhoconnect-client
+    - audiocapture
+    - barcode
+    - indicators
+    - cardreader
+    - mediacapture
+    - mediaplayer
+    - screenorientation
+    - sensor
+    - printing
+    - printing_zebra
