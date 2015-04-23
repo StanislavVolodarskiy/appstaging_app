@@ -1,3 +1,4 @@
+
 /* Basic test methods */
 
 function isAndroidPlatform() {
@@ -65,15 +66,15 @@ function leftZeroFill(number, targetLength) {
 
 //Display Results on Device
 var displayResult = function (desc, data){
-	$('#myList').empty();
+    $('#myList').empty();
     if (desc != "Output: ")
     {
-    	var node=document.createElement("LI");
-    	var textnode =document.createTextNode(desc);
-    	node.appendChild(textnode);
-    	document.getElementById("myList").appendChild(node);
+        var node=document.createElement("LI");
+        var textnode =document.createTextNode(desc);
+        node.appendChild(textnode);
+        document.getElementById("myList").appendChild(node);
     }
-	node = document.createElement("LI");
+    node = document.createElement("LI");
     textnode = document.createTextNode("Output:");
     node.appendChild(textnode);
 
@@ -101,47 +102,12 @@ var displayResult = function (desc, data){
     {
        list.appendChild(document.createElement("LI")).appendChild(document.createTextNode(lines[cnt]));    
     }
-	
-	document.getElementById("myList").appendChild(node);
+    
+    document.getElementById("myList").appendChild(node);
 }
 
 var dispCurrentProcess = function (data){
 	document.getElementById('detailsdiv').innerHTML = data;
-}
-
-var displayObjective = function(data){
-    document.getElementById('objective').innerHTML = data;
-}
-var displayPrecondition = function(data){
-    if(data.length>0){
-        var retData = "<b>PreConditions:</b><br/><ul>";
-        for (var i=0; i<data.length;i++){
-            retData = retData + "<li>"+data[i]+"</li>"
-        }
-        retData = retData + "</ul>";
-        document.getElementById('preCondition').innerHTML = retData;
-    }else{
-        document.getElementById('preCondition').innerHTML = "";
-    }
-}
-var dispVerificationStatus = function(data){
-    var node=document.createElement("li");
-    var textnode=document.createTextNode(data);
-    node.appendChild(textnode);
-    document.getElementById('verificationResult').appendChild(node);
-}
-var dispExpectedResult= function (data){
-	document.getElementById('expectedresult').innerHTML = data;
-}
-
-var dispTestSteps = function (data){
-    data = nl2br(data);
-    document.getElementById('instruction').innerHTML = data;
-}
-
-var dispTestCaseRunning = function (data){
-    data = nl2br(data);
-	document.getElementById('instruction').innerHTML = data;
 }
 
 // Get Random Name {Used in Database to get Random table name for each test}
@@ -179,140 +145,25 @@ function isTestApplicable (anArray){
     return (anArray.indexOf(platform) == -1) ? false : true ;
 }
 
-//Common Method to Make a Test Pass/Fail for Semi Automatic App.
-//Methods is used in System, CardReader
-
-var captureResult = function(status){
-    testResult = status;
-    captured = true;
+var specHelpers = {};
+specHelpers.loadEvent = function()
+{
+	var title = document.createElement('h1');
+	title.textContent = document.getElementsByTagName('title')[0].textContent;
+	var div = document.createElement('div');
+	div.id = 'detailsdiv';
+	var ul = document.createElement('ul');
+	ul.id = 'myList';
+	var outputElement = document.createElement('div');
+	outputElement.id = 'output'
+	outputElement.style = 'display:none';
+	
+	document.body.appendChild(title);
+//	document.body.appendChild(div);
+	document.body.appendChild(ul);
+	document.body.appendChild(outputElement);
 }
-
-var _result = {
-	status: undefined,
-	time_to_wait: 300000,
-	responded: undefined,
-    auto_test: false,
-    auto_fill: undefined,
-	passed: function(){
-		_result.status = true;
-		_result.responded = true;
-	},
-	failed: function(){
-		_result.status = false;
-		_result.responded = true;
-	},
-    done: function(){
-        _result.status = true;
-        _result.responded = true;
-    },
-	reset: function(){
-		_result.status = undefined;
-		_result.responded = undefined;
-        _result.auto_test = false;
-	},
-    runTest: function(){
-        _result.responded = true;
-        if (!_result.auto_test) {
-            $('#pass').show();
-            $('#fail').show();
-        }
-        $('#runtest').hide();
-        $('#done').hide();
-
-    },
-    auto: function() {
-        _result.auto_fill = true;
-    },
-    man: function() {
-        _result.auto_fill = false;
-    },
-    waitForSelectTestMode: function() {
-        $("#action").find(":button").hide();
-        $("#auto").show();
-        $("#man").show();
-        _result.auto_fill = undefined;
-
-        runs(function() {
-            setTimeout(function() {
-                timeout = true;
-            }, _result.time_to_wait);
-        });
-
-        waitsFor(function() {
-            return _result.auto_fill !== undefined;
-        }, 'waiting for user response', _result.time_to_wait+5000);
-
-        runs(function() {
-            $("#action").find(":button").hide();
-        });
-    },
-	waitForResponse: function(){
-		var timeout = false;
-		runs(function() {
-            setTimeout(function() {
-                timeout = true;
-            }, _result.time_to_wait);
-        });
-
-        waitsFor(function() {
-            return _result.responded;
-        }, 'waiting for user response', _result.time_to_wait+5000);
-
-        runs(function() {
-            expect(true).toEqual(_result.status);
-        });
-    },
-    waitToRunTest: function(){
-        runs(function() {
-            $('#pass').hide();
-            $('#fail').hide();
-            $('#done').hide();
-            $('#runtest').show();
-            setTimeout(function() {
-                timeout = true;
-            }, _result.time_to_wait);
-        });
-
-        waitsFor(function() {
-            return _result.responded;
-        }, 'waiting for user response', _result.time_to_wait+5000);
-
-        runs(function() {
-            _result.responded = undefined;
-        });
-    },
-    waitUntilDone: function(needToWaitFn){
-        var canWeSkipWait = false;
-
-        runs(function() {
-            $('#pass').hide();
-            $('#fail').hide();
-            $('#done').show();
-            $('#runtest').hide();
-            _result.responded = false;
-
-            if (needToWaitFn !== undefined && needToWaitFn !== null) {
-                canWeSkipWait = !needToWaitFn();
-            }
-            setTimeout(function() {
-                timeout = true;
-            }, _result.time_to_wait);
-        });
-
-        waitsFor(function() {
-            return _result.responded || canWeSkipWait;
-        }, 'waiting for user response', _result.time_to_wait+5000);
-
-        runs(function() {
-            _result.responded = undefined;
-             $('#done').hide();
-        });
-    },
-    waitToRunAutoTest: function() {
-        _result.auto_test = true;
-        _result.waitToRunTest();
-    }
-}
+window.addEventListener('DOMContentLoaded', specHelpers.loadEvent);
 
 //Common Method for ruby method call from javascript
 var Ruby = {
@@ -333,13 +184,3 @@ var Ruby = {
         return Ruby.data;
     }
 }
-
-function nl2br (str, is_xhtml) {   
-    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';    
-    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
-}
-
-beforeEach(function() {
-    _result.reset();
-    //document.getElementById("myList").innerHTML = '';
-});

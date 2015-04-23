@@ -138,18 +138,7 @@
             // When all done, make it known on JUnitXmlReporter
             JUnitXmlReporter.finished_at = (new Date()).getTime();
 			//Now quit the app
-			//application.quit();
-			/*var xmlhttp;
-			if (window.XMLHttpRequest)
-  			{// code for IE7+, Firefox, Chrome, Opera, Safari
-  				xmlhttp=new XMLHttpRequest();
-  			}
-			else
-  			{// code for IE6, IE5
-  				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  			}
-  			xmlhttp.open("GET","/app/Settings/quitApp", false);
-			xmlhttp.send();*/
+			//Rho.Application.quit();
         },
 
         getNestedOutput: function(suite) {
@@ -162,7 +151,33 @@
 		
 		writeFile: function(filename, text)
 		{
-			var xmlhttp;
+            Rho.Log.info(filename,"JUNITNAME");
+
+            var output = text.split(/(?:[\r\n])+/g);
+            var buffer = []; 
+            var buffer_size = 0;
+            var max_buffer_size = 2 * 1024;
+
+            for (var i = 0; i < output.length; i++) {
+
+                pure_line = output[i];
+
+                if ((buffer_size + pure_line.length > max_buffer_size) && (buffer.length > 0)) {
+                    Rho.Log.info(buffer.join("~~"),'JUNITBLOB');
+                    buffer = [];
+                    buffer_size = 0;      
+                }
+
+                buffer.push(pure_line);
+                buffer_size += pure_line.length + 2;
+                
+            };
+
+            if (buffer.length > 0) {
+                Rho.Log.info(buffer.join("~~"),'JUNITBLOB');
+            }
+
+			var xmlhttp = null;
 			if (window.XMLHttpRequest)
   			{	// code for IE7+, Firefox, Chrome, Opera, Safari
 	  			xmlhttp=new XMLHttpRequest();

@@ -1,71 +1,60 @@
-sdkversion: "3.5.0"
-name: "compliancetest_js"
-app_type: "rhoelements"
-version: "1.0"
-vendor: "rhomobile"
-build: "release"
-bbver: "4.6"
-applog: "rholog.txt"
-capabilities:
-  - phone
-#  - read_sdcard
-#  - write_sdcard
-rhohub:
-  url: "https://appstaging.rhohub.com/api/v1/"
-connection:
-  proxy: "http://wwwgate0.mot.com:1080"
+#sdk: ../../../../rhodes
+paths:
+  extensions:
+
+# Please use relative pathes
+
+  - ../../../extensions
+#  - ../../../../Motorola-Extensions/lib/commonAPI
+#  - ../../../../rhoconnect-client/ext/
+
+
+#  - C:/DevelopmentTools/rhomobile/rhodes/lib/extensions
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/extensions
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/lib/commonAPI
+#  - C:/DevelopmentTools/rhomobile/rhoconnect-client/ext
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/build/ci/extensions
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/build/ci/extensions
+#  - C:/Neon/git/Motorola-Extensions/build/ci/extensions
+#  - B:/git/Motorola-Extensions/build/ci/extensions
+
+#  neon:
+#  - C:/Users/fpc843/workspace/fpc843_rhoelements_dev/NEON
+
+sdkversion: 3.3.2
+name: auto_common_spec
+app_type: rhoelements
+version: 1.0
+vendor: rhomobile
+build: release
+bbver: 4.6
+applog: rholog.txt
 iphone:
-  configuration: "Release"
+  configuration: Release
   sdk: iphonesimulator8.1
-  provisionprofile: 
-  codesignidentity: 
-  entitlements: 
-  BundleIdentifier: "com.rhomobile.compliancetestjs"
-  BundleURLScheme: "compliancetestjs"
-  extensions:
-   - rhoconnect-client
-   - audiocapture
-   - signature
-   - barcode
-   - indicators
-   - mediacapture
-   - mediaplayer
-   - screenorientation
-   - sensor
-   - printing
-   - printing_zebra
-wp:
-  productid: "88e69430-071c-0131-3d46-606720a825c8"
+  provisionprofile:
+  codesignidentity:
+  entitlements:
+  BundleIdentifier: com.rhomobile.apigeneratorspec
+  BundleURLScheme: apigeneratorspec
+  extensions: ["nativeBridgeTest", "barcode", "platformBridgeTest", "appEvents", "indicators", "sensor", "screenorientation", "audiocapture", "mediacapture"]
+wp8:
+  productid: 'b6479381-42a8-0130-78de-3caec51bd50e'
+  extensions: ["mediacapture"]
 symbian:
-  uid: "0xede7d59e"
+  uid: '0xe1a1ef92'
 android:
-  version: "4.2.2"
-  manifest_template: AndroidManifest.erb
-  extensions:
-   - rhoconnect-client
-   - audiocapture
-   - signature
-   - barcode
-   - indicators
-   - cardreader
-   - mediacapture
-   - mediaplayer
-   - screenorientation
-   - sensor
-   - printing
-   - printing_zebra
+  version: 4.2.2
+  extensions: ["nativeBridgeTest", "emdk3-manager", "barcode", "screenorientation", "instrumentation", "cardreader", "indicators", "sensor", "websocket", "eventsource", "audiocapture", 'screenorientation', "mediacapture"]
+  capabilities:
+  - native_browser
 wm:
-#sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
- #sdk: "MC3000c50b (ARMV4I)"
-  extensions:
-    - rhoconnect-client
-    - audiocapture
-    - barcode
-    - indicators
-    - cardreader
-    - mediacapture
-    - mediaplayer
-    - screenorientation
-    - sensor
-    - printing
-    - printing_zebra
+  #webkit_outprocess: 1
+  #use_shared_runtime: yes
+  #sdk: MC3000c50b (ARMV4I)
+  #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+  extensions: ["barcode", "screenorientation", "instrumentation", "cardreader", "indicators", "sensor", "audiocapture", "smartCradle", "mediacapture"]
+#capabilities:
+#- non_motorola_device
+
+extensions: ["genPropBag", "logCapture"]

@@ -1,55 +1,38 @@
-describe("Signature Manual Test", function () {
-    var readFlag = false;
-    var sigCallbackFired = false;
-    var vectorCallbackFired = false;
-    var nulldata;
+describe('Signature specs', function () {
+    var defaultBorderValue = Rho.System.platform != 'APPLE';
+
     var preservedProperties;
+    var getPropertiesData
+    var getPropertyData;
+    var callbackStatus;
+    var flag;
+    var callbackWasCalled;
+    var delayTimeout;
+    var delayHideTimeout;
     
-    var thirtySecTimeout;
-    var nineSecTimeout;
-    var fiveSecTimeout;
-
-    function delayForThirtySeconds() {
-    	readFlag = false;
-        thirtySecTimeout = setTimeout(function () {
-            readFlag = true;
-        }, 30000);
+    var callbackGetProperties = function (data) {
+        getPropertiesData = JSON.stringify(data);
+        callbackStatus = true;
+    }
+    var callbackGetProperty = function (data) {
+        getPropertyData = data;
+        callbackStatus = true;
     }
 
-    function delayForNineSeconds() {
-    	readFlag = false;
-    	nineSecTimeout = setTimeout(function () {
-            readFlag = true;
-        }, 9000);
+    function delayCall() {
+        flag = false;
+        delayTimeout = setTimeout(function() {
+            flag = true;
+        }, ENABLE_TIMEOUT_VALUE);
     }
 
-    function delayForFiveSeconds() {
-    	readFlag = false;
-    	fiveSecTimeout = setTimeout(function () {
-            readFlag = true;
-        }, 5000);
+    function delayHideCall() {
+        flag = false;
+        delayHideTimeout = setTimeout(function() {
+            flag = true;
+        }, HIDE_TIMEOUT_VALUE);
     }
 
-    var callbackImage = function (data) {
-        //imageCallback(JSON.stringify(data));
-        imageCallback(data);
-        sigCallbackFired = true;
-    };
-
-    var callbackDataUri = function (data) {
-        //dataUriCallback(JSON.stringify(data));
-        dataUriCallback(data);
-        sigCallbackFired = true;
-    };
-
-    var callbackVector = function (data) {
-    	
-        //vectorCallback(JSON.stringify(data));
-        vectorCallback(data);
-        vectorCallbackFired = true;
-    };
-
-    //Added to preserve the default values of signature
     preservedProperties = {};
     preservedProperties.bgColor = Rho.Signature.bgColor;
     //added the if condition because on WM it' faling and saying Invalid compression format
@@ -65,40 +48,86 @@ describe("Signature Manual Test", function () {
     preservedProperties.top = Rho.Signature.top;
     preservedProperties.width = Rho.Signature.width;
 
-    describe("Signature Spec for Show and takeFullScreen ", function () {
 
-        beforeEach(function () {
-            readFlag = false;
-            nulldata = '';
-            document.getElementById("actResult").innerHTML = "init";
-            imageCallback(nulldata);
-            dataUriCallback(nulldata);
-            vectorCallback(nulldata);
-            sigCallbackFired = false;
-            vectorCallbackFired = false;
+    beforeEach(function () {
 
+        flag = false;
+        callbackWasCalled = false;
+        getPropertiesData = '';
+        getPropertyData = '';
+        callbackStatus = false;
+
+    });
+
+    afterEach(function () {
+
+        if(delayTimeout)
+        {
+            window.clearTimeout(delayTimeout);
+            delayTimeout = null;
+        } 
+
+        if(delayHideTimeout)
+        {
+            window.clearTimeout(delayHideTimeout);
+            delayHideTimeout = null;
+        }   
+
+        //Rho.Signature.hide();
+    });
+
+    describe('Signature specs with default value of properties', function () {
+
+        it("Default value of bgColor should be '#FFFFFFFF'", function () {
+            expect(Rho.Signature.bgColor).toEqual('#FFFFFFFF');
         });
 
-        afterEach(function () {
-        	if(thirtySecTimeout)
-        	{
-        		window.clearTimeout(thirtySecTimeout);
-        		thirtySecTimeout = null;
-        	}
-        	if(nineSecTimeout)
-        	{
-        		window.clearTimeout(nineSecTimeout);
-        		nineSecTimeout = null;
-        	}
-        	if(fiveSecTimeout)
-        	{
-        		window.clearTimeout(fiveSecTimeout);
-        		fiveSecTimeout = null;
-        	}
-        	//noinspection JSUnresolvedVariable
-            Rho.Signature.clear();
+        it("Default value of compressionFormat should be 'png'", function () {
+            expect(Rho.Signature.compressionFormat).toEqual('png');
+        });
 
-            // setting the default values after ecah test    
+        it("Default value of fileName should be 'signature'", function () {
+            expect(Rho.Signature.fileName).toEqual('signature');
+        });
+
+        it("Default value of outputFormat should be 'image'", function () {
+            expect(Rho.Signature.outputFormat).toEqual('image');
+        });
+
+        it("Default value of penColor should be '#FF000000'", function () {
+            expect(Rho.Signature.penColor).toEqual('#FF000000');
+        });
+
+        it("Default value of penWidth should be 3", function () {
+            expect(Rho.Signature.penWidth).toEqual(3);
+        });
+
+        it("Default value of border should be " + defaultBorderValue, function () {
+            expect(Rho.Signature.border).toEqual(defaultBorderValue);
+        });
+
+        it("Default value of height should be 150", function () {
+            expect(Rho.Signature.height).toEqual(150);
+        });
+
+        it("Default value of left should be 15", function () {
+            expect(Rho.Signature.left).toEqual(15);
+        });
+
+        it("Default value of top should be 60", function () {
+            expect(Rho.Signature.top).toEqual(60);
+        });
+
+        it("Default value of width should be 200", function () {
+            expect(Rho.Signature.width).toEqual(200);
+        });
+    });
+
+    describe('Signature specs with show() and takeFullScreen() functions', function () {
+
+        afterEach(function () {            
+            Rho.Signature.hide();
+
             Rho.Signature.bgColor = preservedProperties.bgColor;
             //added the if condition because on WM it' faling and saying Invalid compression format
             if (!isWindowsMobilePlatform()){
@@ -111,294 +140,477 @@ describe("Signature Manual Test", function () {
             Rho.Signature.height = preservedProperties.height;
             Rho.Signature.left = preservedProperties.left;
             Rho.Signature.top = preservedProperties.top;
-            Rho.Signature.width = preservedProperties.width;            
+            Rho.Signature.width = preservedProperties.width;
         });
 
-        it("VT200-0462 | Call takeFullScreen with callback as function and returned status OK |", function () {
+        it("VT299-2006 | call show() with all string |", function () {
 
-            displayObjective("VT200-0462 |Call takeFullScreen with callback as function and returned status OK|");
-            dispTestSteps("Wait for 10 sec for Fullscreen Signature box to comeup and press capture after drawing any signature on signature area");
-            dispExpectedResult("The returned status should be OK and path of the captured signature image should be returned (Image should be rendered on page)");
-            _result.waitToRunTest();
+            Rho.Signature.show({bgColor: '#FF0000', border: 'true', penWidth: '2'});
 
-            runs(function () {
-                Rho.Signature.fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0462');
-                Rho.Signature.takeFullScreen({}, callbackImage);
-                delayForNineSeconds();
-            });
-            waitsFor(function () {
-                return readFlag || sigCallbackFired;
-            }, 'wait to callback to fire or timeout', 10000);
+            delayCall();
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
 
             runs(function () {
-                Rho.Signature.hide();
-                _result.waitForResponse();
+                expect(Rho.Signature.bgColor).toEqual('#FF0000');
+                expect(Rho.Signature.border).toEqual(defaultBorderValue);
+                expect(Rho.Signature.penWidth).toEqual(2);
             });
         });
 
-        it("VT200-0463 | Call takeFullScreen with callback as function and returned status cancel |", function () {
-
-            displayObjective("VT200-0463 |Call takeFullScreen with callback as function and returned status cancel |");
-            dispTestSteps("Wait for 10 sec for Fullscreen Signature box to comeup and press cancel after drawing any signature on signature area");
-            dispExpectedResult("The returned status should be cancel and no path of the signature image should be returned");
-            _result.waitToRunTest();
-
-            runs(function () {
-                Rho.Signature.fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0463');
-                Rho.Signature.takeFullScreen({}, callbackImage);
-                delayForNineSeconds();
+        it("VT299-2007 | call takeFullScreen() with all string |", function () {
+                    
+            runs(function() {
+                delayHideCall();
             });
-            waitsFor(function () {
-                return readFlag || sigCallbackFired;
-            }, 'wait to callback to fire or timeout', 10000);
 
-            runs(function () {
-                Rho.Signature.hide();
-                _result.waitForResponse();
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", HIDE_TIMEOUT_VALUE1);
+
+            runs(function() {
+                Rho.Signature.takeFullScreen({'bgColor': '#FF0000', 'outputFormat': 'image', 'penWidth': '1'}, sigCallback);
+                delayCall();
+            });
+
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
+
+            runs(function() {
+                expect(Rho.Signature.bgColor).toEqual('#FF0000');
+                expect(Rho.Signature.border).toEqual(defaultBorderValue);
+                expect(Rho.Signature.outputFormat).toEqual('image');
+                expect(Rho.Signature.penWidth).toEqual(1);
             });
         });
 
-        it("VT200-0464 | Call capture with callback as anonymous function |", function () {
+        it("VT299-2010 | Call takeFullScreen() to check default values of all property |", function () {
 
-            displayObjective("VT200-0464 |Call capture with callback as anonymous function|");
-            dispTestSteps("Wait for 10 sec for Signature box(NonFullScreen) to comeup and draw any signature on signature area and wait for");
-            dispExpectedResult("The returned status should be OK and path of the captured signature image should be returned (Image should be rendered on page)");
-            _result.waitToRunTest();
-
-            runs(function () {
-                Rho.Signature.fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0464');
-                Rho.Signature.show();
-                delayForFiveSeconds();
+            runs(function() {
+                delayHideCall();
             });
-            waitsFor(function () {
-               return readFlag;
-            }, 'wait to callback to fire or timeout', 6000);
 
-            runs(function () {
-                Rho.Signature.capture(function (data) {
-                    imageCallback(data);
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", HIDE_TIMEOUT_VALUE1);
+
+            runs(function() {
+                Rho.Signature.takeFullScreen({}, function (data) {
                 });
-                Rho.Signature.hide();
-                _result.waitForResponse();
+                delayCall();
+            });
+
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
+
+            runs(function() {
+                expect(Rho.Signature.bgColor).toEqual('#FFFFFFFF');
+                expect(Rho.Signature.compressionFormat).toEqual('png');
+                expect(Rho.Signature.fileName).toEqual('signature');
+                expect(Rho.Signature.outputFormat).toEqual('image');
+                expect(Rho.Signature.penColor).toEqual('#FF000000');
+                expect(Rho.Signature.penWidth).toEqual(3);
             });
         });
 
-        it("VT200-0465 | Call show and then call capture and clear |", function () {
+        it("VT299-2011 | call show() to check default values of all property |", function () {
 
-            displayObjective("VT200-0465 | Call show and then call capture and clear |");
-            dispTestSteps("Wait for 10 sec for Signature box(NonFullScreen) to comeup and draw any signature on signature area and wait for clear to call");
-            dispExpectedResult("The signature area should be clear after clear has been called and a clear signature image should be saved at returned path");
-            _result.waitToRunTest();
+            Rho.Signature.show();
 
-            runs(function () {
-                Rho.Signature.fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0465');
-                Rho.Signature.show();
-                delayForFiveSeconds();
-            });
-            waitsFor(function () {
-                return readFlag;
-            }, 'wait to callback to fire or timeout', 6000);
+            delayCall();
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
 
-            runs(function () {
-                Rho.Signature.clear();
-                Rho.Signature.capture(function (data) {
-                    callbackImage(data);
-                });
-                Rho.Signature.hide();
-                _result.waitForResponse();
+            runs(function() {
+                expect(Rho.Signature.bgColor).toEqual('#FFFFFFFF');
+                expect(Rho.Signature.compressionFormat).toEqual('png');
+                expect(Rho.Signature.fileName).toEqual('signature');
+                expect(Rho.Signature.outputFormat).toEqual('image');
+                expect(Rho.Signature.penColor).toEqual('#FF000000');
+                expect(Rho.Signature.penWidth).toEqual(3);
+                expect(Rho.Signature.border).toEqual(defaultBorderValue);
+                expect(Rho.Signature.height).toEqual(150);
+                expect(Rho.Signature.left).toEqual(15);
+                expect(Rho.Signature.top).toEqual(60);
+                expect(Rho.Signature.width).toEqual(200);
             });
         });
 
-        it("VT200-0466 | Call takeFullScreen with setting compressionFormat as jpg, fileName as VT200-0466 and outputFormat as Image |", function () {
+        it("VT299-2008| call show() with required data types |", function () {
 
-            displayObjective("VT200-0466 |Call takeFullScreen with setting compressionFormat as jpg, fileName as VT200-0466 and outputFormat as Image|");
-            dispTestSteps("Wait for 10 sec for Signature box(FullScreen) to comeup and press capture after drawing, check the image at returned URI");
-            dispExpectedResult("The format of saved image should be jpg with name VT200-0466 and Image should be saved at retrurned path (saved image is rendered for validation)");
-            _result.waitToRunTest();
+            Rho.Signature.show({'bgColor': '#FF0000', 'border': false, 'penWidth': 1});
 
-            runs(function () {
-                Rho.Signature.bgColor = '#FF0000';
-                Rho.Signature.penColor = '#0000FF';
-                Rho.Signature.penWidth = 3;
-                var fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0466');
-                Rho.Signature.takeFullScreen({compressionFormat: CONST_JPG, fileName: fileName, outputFormat: 'image'}, callbackImage);
-                delayForNineSeconds();
-            });
+            delayCall();
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
 
-            waitsFor(function () {
-                return readFlag || sigCallbackFired;
-            }, 'wait to callback to fire or timeout', 10000);
-
-            runs(function () {
-                Rho.Signature.hide();
-                _result.waitForResponse();
+            runs(function() {
+                expect(Rho.Signature.bgColor).toEqual('#FF0000');
+                expect(Rho.Signature.border).toEqual(false);
+                expect(Rho.Signature.penWidth).toEqual(1);
             });
         });
 
-        if (isAnyButApplePlatform()) 
-        {
-            it("VT200-0467 | Call takeFullScreen with compressionFormat as jpg, fileName as VT200-0467 and outputFormat as dataUri |", function () {
+        it("VT299-2009 | call takeFullScreen() with required data types |", function() {
 
-                displayObjective("VT200-0467 |Call takeFullScreen with compressionFormat as jpg, fileName as VT200-0467 and outputFormat as dataUri|");
-                dispTestSteps("Wait for 10 sec for Signature box(FullScreen) to comeup and press capture after drawing, check the image at returned URI");
-                dispExpectedResult("The signature should be rendered in page as callback returns datauri (no path of image) and image should be black signature area with white normal pen");
-                _result.waitToRunTest();
-
-                runs(function () {
-                    Rho.Signature.bgColor = '#000000';
-                    Rho.Signature.penColor = '#FFFFFF';
-                    Rho.Signature.penWidth = 3;
-                    var fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0467');
-                    Rho.Signature.takeFullScreen({compressionFormat: CONST_JPG, fileName: fileName, outputFormat: 'dataUri'}, callbackDataUri);
-                    delayForNineSeconds();
-                });
-                waitsFor(function () {
-                    return readFlag || sigCallbackFired;
-                }, 'wait to callback to fire or timeout', 10000);
-
-                runs(function () {
-                    Rho.Signature.hide();
-                    _result.waitForResponse();
-                });
+            runs(function() {
+                delayHideCall();
             });
-        }
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", HIDE_TIMEOUT_VALUE1);
 
-        it("VT200-0468 | Call show with bgColor as #FFFF8C00 (ARGB), penColor as #00FF00(RGB), penWidth as 1, and callback |", function () {
-
-            displayObjective("VT200-0468 |Call show with bgColor as #FFFF8C00 (ARGB), penColor as #00FF00(RGB), penWidth as 1, and callback|");
-            dispTestSteps("Wait for 10 sec for Signature box(NonFullScreen) to comeup and wait after drawing, check the image at returned URI");
-            dispExpectedResult("The signature area should be default area of color darkOrange and pen as green with thin width penline and signature should be saved at return path with name VT200-0468.jpg (saved image is rendered for validation)");
-            _result.waitToRunTest();
-
-            runs(function () {
-                var fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0468');
-                Rho.Signature.show({bgColor: '#FFFF8C00', penColor: '#FF00FF00', penWidth: 1, compressionFormat: CONST_JPG, fileName: fileName, outputFormat: 'image'});
-                delayForFiveSeconds();
+            runs(function() {
+                Rho.Signature.takeFullScreen({'bgColor': '#FF0000', 'outputFormat': 'image', 'penWidth': 3}, sigCallback);
+                delayCall();
             });
-            waitsFor(function () {
-                return readFlag;
-            }, 'wait to callback to fire or timeout', 6000);
 
-            runs(function () {
-                Rho.Signature.capture(callbackImage);
-                Rho.Signature.hide();
-                _result.waitForResponse();
+            waitsFor(function() {
+                return flag;
+            }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
+
+            runs(function() {
+                expect(Rho.Signature.bgColor).toEqual('#FF0000');
+                expect(Rho.Signature.outputFormat).toEqual('image');
+                expect(Rho.Signature.penWidth).toEqual(3);
             });
         });
-
-        if (isAnyButApplePlatform()) 
-        {
-            it("VT200-0469 | Call show after setting all properties and outputFormat as dataURI|", function () {
-
-                displayObjective("VT200-0469 |Call show after setting all properties and outputFormat as dataURI|");
-                dispTestSteps("Wait for 10 sec for Signature box(NonFullScreen) to comeup and wait after drawing, check the image at returned URI");
-                dispExpectedResult("The signature area should be nonfullscreen area with border of specified size  left as 15, top as 60, width as 200 and height as 150 with penline width as 5(thickest than prev test), signature should be rendered in page as callback returns the dataURI, no path should retrun");
-                _result.waitToRunTest();
-
-                runs(function () {
-                    Rho.Signature.bgColor = '#00FF00';
-                    Rho.Signature.penColor = '#FF800000';
-                    Rho.Signature.penWidth = 5;
-                    Rho.Signature.left = 15;
-                    Rho.Signature.top = 60;
-                    Rho.Signature.height = 150;
-                    Rho.Signature.width = 200;
-                    Rho.Signature.outputFormat = 'dataUri';
-                    Rho.Signature.border = true;
-                    Rho.Signature.show();
-
-                    delayForFiveSeconds();
-                });
-                waitsFor(function () {
-                    return readFlag;
-                }, 'wait to callback to fire or timeout', 6000);
-
-                runs(function () {
-                    Rho.Signature.capture(callbackDataUri);
-                    Rho.Signature.hide();
-                    _result.waitForResponse();
-                });
-            });
-
-            it("VT200-0470 | Call setVectorCallback with function callback|", function () {
-
-                displayObjective("VT200-0470 |Call setVectorCallback with function callback|");
-                dispTestSteps("Wait for 10 sec for Signature box(NonFullScreen) to comeup and draw a line, check for setVectorCallback to fire ");
-                dispExpectedResult("The signature area should be Nonfullscreen area and setVectorCallback callback will be fired after 'pen up' occurs in the signature box.");
-                _result.waitToRunTest();
-
-                runs(function () {
-                    Rho.Signature.bgColor = '#00FF00';
-                    Rho.Signature.penColor = '#FF800000';
-                    Rho.Signature.penWidth = 5;
-                    Rho.Signature.left = 15;
-                    Rho.Signature.top = 60;
-                    Rho.Signature.height = 150;
-                    Rho.Signature.width = 200;
-                    Rho.Signature.outputFormat = 'image';
-                    Rho.Signature.border = false;
-                    Rho.Signature.fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0470');
-                    Rho.Signature.compressionFormat = CONST_JPG;
-                    Rho.Signature.setVectorCallback(callbackVector);
-                    Rho.Signature.show();
-
-                    delayForFiveSeconds();
-                });
-                waitsFor(function () {
-                    return readFlag || sigCallbackFired || vectorCallbackFired;
-                }, 'wait to callback to fire or timeout', 6000);
-
-                runs(function () {
-                    Rho.Signature.hide();
-                    _result.waitForResponse();
-                });
-            });
-        }
-
-        it("VT200-0471 | Call show and rotate the device|", function () {
-
-            displayObjective("VT200-0471 |Call show and rotate the device|");
-            dispTestSteps("Wait for 10 sec for Signature box to comeup and rotate the device");
-            dispExpectedResult("The signature area should be visible after rotating the device");
-            _result.waitToRunTest();
-
-            runs(function () {
-                Rho.Signature.show();
-                delayForNineSeconds();
-            });
-
-            waitsFor(function () {
-                return readFlag;
-            }, 'wait to callback to fire or timeout', 10000);
-
-            runs(function () {
-                Rho.Signature.hide();
-                _result.waitForResponse();
-            });
-        });
-
-        it("VT200-0472 | Call takeFullScreen and rotate the device portrait to landscape |", function () {
-
-            displayObjective("VT200-0472 |Call takeFullScreen and rotate the device portrait to landscape|");
-            dispTestSteps("Wait for 10 sec for Fullscreen Signature box to comeup and rotate the device");
-            dispExpectedResult("Signature area with all buttons should be visible after rotation");
-            _result.waitToRunTest();
-
-            runs(function () {
-                Rho.Signature.fileName = Rho.RhoFile.join(Rho.Application.databaseBlobFolder, 'VT200-0472');
-                Rho.Signature.takeFullScreen({}, callbackImage);
-                delayForNineSeconds();
-            });
-
-            waitsFor(function () {
-                return readFlag || sigCallbackFired;
-            }, 'wait to callback to fire or timeout', 10000);
-
-            runs(function () {
-                Rho.Signature.hide();
-                _result.waitForResponse();
-            });
-        });
- 
     });
-});	
+
+    var arrSIGshow = getApplicablePropertiesShow();
+    var arrSIGtake = getApplicablePropertiesFullScreen();
+    (function (showSpecArray, takeFullScreenSpecArray) {
+
+        /*
+        //propertybag is not supported in signatur
+        xdescribe("set/get Property and set/get properties with all combination", function () {
+
+
+            xit("VT299-2001 | call getProperties() with sync callback and hash |", function () {
+
+                runs(function () {
+                    Rho.Signature.setProperties({'bgColor': '#FF0000', 'border': 'true', 'penWidth': '2'});
+                    Rho.Signature.getProperties(['bgColor', 'border', 'penWidth'], callbackGetProperties);
+                });
+
+                waitsFor(function () {
+                    return callbackStatus;
+                });
+
+                runs(function () {
+                    expect(getPropertiesData).toContain('#FF0000');
+                    expect(getPropertiesData).toContain('true');
+                    expect(getPropertiesData).toContain('2');
+                });
+            });
+            xit("VT299-2002 | call getProperties() with anonymous callback and hash |", function () {
+
+                runs(function () {
+                    Rho.Signature.setProperties({'bgColor': '#FFFF00', 'border': false, 'penWidth': 1});
+                    Rho.Signature.getProperties(['bgColor', 'border', 'penWidth'], function (data) {
+                        getPropertiesData = JSON.stringify(data);
+                        callbackStatus = true;
+                    });
+                });
+
+                waitsFor(function () {
+                    return callbackStatus;
+                });
+
+                runs(function () {
+                    expect(getPropertiesData).toContain('#FFFF00');
+                    expect(getPropertiesData).toContain(false);
+                    expect(getPropertiesData).toContain(1);
+                });
+            });
+            xit("VT299-2000 | call getProperties() without callback |", function () {
+
+                //Rho.Signature.clearAllProperties();
+                Rho.Signature.setProperties({'bgColor': '#FFFFFF', 'border': true, 'penWidth': 3});
+                var data = Rho.Signature.getProperties(['compressionFormat', 'desiredHeight', 'outputFormat']);
+                getPropertiesData = JSON.stringify(data);
+                expect(getPropertiesData).toContain('#FFFFFF');
+                expect(getPropertiesData).toContain(true);
+                expect(getPropertiesData).toContain(3);
+            });
+            xit("VT299-2004 | call getProperty() with sync callback and property |", function () {
+
+                runs(function () {
+                    Rho.Signature.setProperty('compressionFormat', 'jpg');
+                    Rho.Signature.getProperty("compressionFormat", callbackGetProperty);
+                });
+
+                waitsFor(function () {
+                    return callbackStatus;
+                });
+
+                runs(function () {
+                    expect(getPropertyData).toEqual('jpg');
+                });
+            });
+            xit("VT299-2005 | call getProperty() with anonymous callback and property |", function () {
+
+                runs(function () {
+                    Rho.Signature.setProperty('penWidth', '5');
+                    Rho.Signature.getProperty('penWidth', function (data) {
+                        getPropertyData = data;
+                        callbackStatus = true;
+                    });
+                });
+
+                waitsFor(function () {
+                    return callbackStatus;
+                });
+
+                runs(function () {
+                    expect(getPropertyData).toEqual('5');
+                });
+            });
+            xit("VT299-2003 | call getProperty() without callback |", function () {
+
+                Rho.Signature.setProperty('penWidth', 4);
+                var data = Rho.Signature.getProperty("penWidth");
+                getPropertyData = data;
+                expect(getPropertyData).toEqual(4);
+            });
+        });
+
+        //property bag is not supported in Signature
+        xdescribe("Signature property using set/getProperty", function() {
+
+            for (var i=0;i<showSpecArray.length;i++){
+
+                (function(idx){
+                    it(showSpecArray[idx]['testName'], function() {
+
+                            Rho.Signature.setProperty(showSpecArray[idx]['propertyName'],showSpecArray[idx]['propertyValue']);
+                            var data = Rho.Signature.getProperty(showSpecArray[idx]['propertyName']);
+                            expect(data).toEqual(showSpecArray[idx]['expectedResult']);
+                    });
+
+                })(i);
+            }
+        });
+
+        xdescribe("Signature property Using set/getProperties ", function() {
+
+            for (var i=0;i<showSpecArray.length;i++){
+
+                (function(idx){
+                    it(showSpecArray[idx]['testName'], function() {
+                    
+                        var propertyName = showSpecArray[idx]['propertyName'];
+                        var propertyValue = showSpecArray[idx]['propertyValue'];
+
+                        if (propertyValue == 'true')
+                            var strProperty = '{"'+propertyName+'" :'+true+'}';
+                        else if (propertyValue == 'false')
+                            var strProperty = '{"'+propertyName+'" :'+false+'}';
+                        else if (!isNaN(propertyValue)){
+                            propertyValue = parseInt(propertyValue);
+                            var strProperty = '{"'+propertyName+'" :'+propertyValue+'}';
+                        }
+                        else{
+                            var strProperty = '{"'+propertyName+'" : "'+propertyValue+'"}'
+                        }
+
+                        var objProperty = JSON.parse(strProperty);
+                    
+                        Rho.Signature.setProperties(objProperty);
+
+                        var strGetProperty = '["'+showSpecArray[idx]['propertyName']+'"]';
+                        var objGetProperty = JSON.parse(strGetProperty);
+
+                        var data = Rho.Signature.getProperties(objGetProperty);
+
+        
+                        data = data[arrSignatureshow[idx]['propertyName']];
+                        expect(data).toEqual(arrSignatureshow[idx]['expectedResult']);
+
+                    });
+                })(i);
+            }
+        });
+        */
+
+        describe("Signature property setting Directly", function () {
+            afterEach(function () {
+                Rho.Signature.bgColor = preservedProperties.bgColor;
+                //added the if condition because on WM it' faling and saying Invalid compression format
+                if (!isWindowsMobilePlatform()){
+                Rho.Signature.compressionFormat = preservedProperties.compressionFormat;}
+                Rho.Signature.fileName = preservedProperties.fileName;
+                Rho.Signature.outputFormat = preservedProperties.outputFormat;
+                Rho.Signature.penColor = preservedProperties.penColor;
+                Rho.Signature.penWidth = preservedProperties.penWidth;
+                Rho.Signature.border = preservedProperties.border;
+                Rho.Signature.height = preservedProperties.height;
+                Rho.Signature.left = preservedProperties.left;
+                Rho.Signature.top = preservedProperties.top;
+                Rho.Signature.width = preservedProperties.width;
+            });
+
+            for (var i = 0; i < showSpecArray.length; i++) {
+                (function (idx) {
+                    it(showSpecArray[idx]['testName'], function () {
+                        var propertyName = showSpecArray[idx]['propertyName'];
+                        var propertyValue = showSpecArray[idx]['propertyValue'];
+                        try {
+                            if (propertyValue == 'true')
+                                eval(Rho.Signature)[propertyName] = true;
+                            else if (propertyValue == 'false')
+                                eval(Rho.Signature)[propertyName] = false;
+                            else if (!isNaN(propertyValue)) {
+                                propertyValue = parseInt(propertyValue);
+                                eval(Rho.Signature)[propertyName] = propertyValue;
+                            }
+                            else {
+                                eval(Rho.Signature)[propertyName] = propertyValue;
+                            }
+
+                            var data = eval(Rho.Signature)[showSpecArray[idx]['propertyName']];
+                        }
+                        catch (err) {
+                            var data = err.message;
+                        }
+                        expect(data).toEqual(showSpecArray[idx]['expectedResult']);
+                    });
+                })(i)
+            }
+        });
+
+        describe("Signature property set using show()", function () {
+
+            afterEach(function() {
+                Rho.Signature.hide();
+
+                Rho.Signature.bgColor = preservedProperties.bgColor;
+                //added the if condition because on WM it' faling and saying Invalid compression format
+                if (!isWindowsMobilePlatform()){
+                Rho.Signature.compressionFormat = preservedProperties.compressionFormat;}
+                Rho.Signature.fileName = preservedProperties.fileName;
+                Rho.Signature.outputFormat = preservedProperties.outputFormat;
+                Rho.Signature.penColor = preservedProperties.penColor;
+                Rho.Signature.penWidth = preservedProperties.penWidth;
+                Rho.Signature.border = preservedProperties.border;
+                Rho.Signature.height = preservedProperties.height;
+                Rho.Signature.left = preservedProperties.left;
+                Rho.Signature.top = preservedProperties.top;
+                Rho.Signature.width = preservedProperties.width;
+            });
+
+            for (var i = 0; i < showSpecArray.length; i++) {
+                (function (idx) {
+                    it(showSpecArray[idx]['testName'], function () {
+
+                        runs(function() {                        
+                            var propertyName = showSpecArray[idx]['propertyName'];
+                            var propertyValue = showSpecArray[idx]['propertyValue'];
+                            if (propertyValue == 'true')
+                                var strProperty = '{"' + propertyName + '" :' + true + '}';
+                            else if (propertyValue == 'false')
+                                var strProperty = '{"' + propertyName + '" :' + false + '}';
+                            else if (!isNaN(propertyValue)) {
+                                propertyValue = parseInt(propertyValue);
+                                var strProperty = '{"' + propertyName + '" :' + propertyValue + '}';
+                            }
+                            else {
+                                var strProperty = '{"' + propertyName + '" : "' + propertyValue + '"}'
+                            }
+                            var objProperty = JSON.parse(strProperty);
+
+                            Rho.Signature.show(objProperty);
+
+                            delayCall();
+                        });
+
+                        waitsFor(function() {
+                            return flag;
+                        }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
+
+                        runs(function () {
+                            var data = eval(Rho.Signature)[showSpecArray[idx]['propertyName']];
+                            expect(data).toEqual(showSpecArray[idx]['expectedResult']);
+                        });
+                    });
+                })(i);
+            }
+        });
+
+        describe("Signature property set using takeFullScreen()", function () {
+
+            beforeEach(function() {
+                flag = false;
+            });
+
+            afterEach(function() {
+                Rho.Signature.hide();
+
+                Rho.Signature.bgColor = preservedProperties.bgColor;
+                //added the if condition because on WM it' faling and saying Invalid compression format
+                if (!isWindowsMobilePlatform()){
+                Rho.Signature.compressionFormat = preservedProperties.compressionFormat;}
+                Rho.Signature.fileName = preservedProperties.fileName;
+                Rho.Signature.outputFormat = preservedProperties.outputFormat;
+                Rho.Signature.penColor = preservedProperties.penColor;
+                Rho.Signature.penWidth = preservedProperties.penWidth;
+                Rho.Signature.border = preservedProperties.border;
+                Rho.Signature.height = preservedProperties.height;
+                Rho.Signature.left = preservedProperties.left;
+                Rho.Signature.top = preservedProperties.top;
+                Rho.Signature.width = preservedProperties.width;
+            });
+
+            for (var i = 0; i < takeFullScreenSpecArray.length; i++) {
+                (function (idx) {
+                it(takeFullScreenSpecArray[i]['testName'], function () {
+
+                    runs(function() {
+                        delayHideCall();
+                    }); 
+
+                    waitsFor(function() {
+                        return flag;
+                    }, "delay before expect", HIDE_TIMEOUT_VALUE1);
+
+                    runs(function() {                   
+                        var propertyName = takeFullScreenSpecArray[idx]['propertyName'];
+                        var propertyValue = takeFullScreenSpecArray[idx]['propertyValue'];
+                        if (propertyValue == 'true')
+                            var strProperty = '{"' + propertyName + '" :' + true + '}';
+                        else if (propertyValue == 'false')
+                            var strProperty = '{"' + propertyName + '" :' + false + '}';
+                        else if (!isNaN(propertyValue)) {
+                            propertyValue = parseInt(propertyValue);
+                            var strProperty = '{"' + propertyName + '" :' + propertyValue + '}';
+                        }
+                        else {
+                            var strProperty = '{"' + propertyName + '" : "' + propertyValue + '"}'
+                        }
+                        var objProperty = JSON.parse(strProperty);
+
+                        Rho.Signature.takeFullScreen(objProperty, sigCallback);
+
+                        delayCall();
+                    });
+
+                    waitsFor(function() {
+                        return flag;
+                    }, "delay before expect", ENABLE_TIMEOUT_VALUE1);
+
+                    runs(function() {
+                        var data = eval(Rho.Signature)[takeFullScreenSpecArray[idx]['propertyName']];
+                        expect(data).toEqual(takeFullScreenSpecArray[idx]['expectedResult']);
+                    });
+                });
+                })(i);
+            }
+        });
+    })(arrSIGshow, arrSIGtake);
+});
+

@@ -7,7 +7,7 @@ function testFailed() {
 }
 
 function setExpected(expected) {
-    document.getElementById('expectedresult').innerHTML = expected;
+    document.getElementById('expResult').innerHTML = expected;
 }
 
 function enablecallbackdata(data) {
@@ -24,10 +24,6 @@ function setObjective(objective) {
 
 function setInstruction(instruction) {
     document.getElementById('instruction').innerHTML = instruction;
-}
-
-function showOutput(output) {
-    document.getElementById('test_output').innerHTML = output;
 }
 
 var displayPrinterResult = function(desc, data, placeTimestamp) {
@@ -79,51 +75,6 @@ function displaySearchResults(paramaters, display_printers, display_errors) {
     }
 
     displayPrinterResult(jasmine.getEnv().currentSpec.description, query);
-}
-
-function setupTestFields() {
-    $('#dev_list').empty();
-    $('#dev_list').prepend('<option value=\'\'>none</option>').val('');
-    $('#dev_list').change(function() {
-        var valueSelected = $(this).val();
-        if (valueSelected == '') {
-            $('#dev_addr').val('127.0.0.1');
-            $('#dev_port').val('6101');
-            $('#dev_conn_type').val(Rho.Printer.CONNECTION_TYPE_TCP);
-        } else {
-            var res = valueSelected.split('|');
-            $('#dev_conn_type').val(res[0]);
-            $('#dev_addr').val(res[1]);
-            $('#dev_port').val(res[2]);
-        }
-    });
-}
-
-function updatePrinterList(printers) {
-    for (var i = 0; i < printers.length; i++) {
-        var printerInstance = Rho.Printer.getPrinterByID(printers[i]);
-        var printerType = printerInstance.printerType.replace('PRINTER_TYPE_', '');
-        var connType = printerInstance.connectionType.replace('CONNECTION_TYPE_', '');
-        var devName = printerType + '-' + connType + '@' + printerInstance.deviceAddress;
-        var pid = printerInstance.connectionType + '|' + printerInstance.deviceAddress + '|' + printerInstance.devicePort + '|' + printers[i];
-
-        $('#dev_list').append($('<option>', {
-            value: pid
-        }).text(devName));
-    }
-    $('#dev_list').val($('#dev_list option:eq(1)').val()).trigger('change');
-}
-
-function uniqArray(array) {
-    var temp = {};
-    for (var i = 0; i < array.length; i++) {
-        temp[array[i]] = true;
-    }
-    var uniq = [];
-    for (var k in temp) {
-        uniq.push(k);
-    }
-    return uniq;
 }
 
 function runSearch(options, timeout) {
@@ -198,39 +149,6 @@ function runSearch(options, timeout) {
     return SO;
 }
 
-function makeTestLabel(label) {
-    return '^XA^MNN^LL200^XZ^XA^JUS^XZ^XA^FO150,50,0^A0I25,25^TBI,300,75^FD' + label + '^FS^XZ\r\n';
-}
-
-function objkeys(obj) {
-    var keys = [];
-    $.each(obj, function(key, value) {
-        keys.push(key);
-    });
-    return keys;
-}
-
-// make a list of all available combinations of fields within object
-
-function makeAllCombinationsOfFileds(obj) {
-    var combinations = []; //All combinations
-    var keys = objkeys(obj);
-    var quantity = (1 << keys.length);
-    if (quantity > 0) {
-        for (var i = 0; i < quantity; i++) {
-            var combination = {};
-            for (var j = 0; j < keys.length; j++) {
-                if ((i & (1 << j))) {
-                    var key = keys[j];
-                    combination[key] = obj[key];
-                }
-            }
-            combinations.push(combination);
-        }
-    }
-    return combinations;
-}
-
 function addCombo() {
     $('#select_box_wrapper').show();
     var textb = {
@@ -268,7 +186,7 @@ function hideCombo() {
 
 $(window).load(
     function() {
-        var conn_types = [Rho.Printer.CONNECTION_TYPE_BLUETOOTH, Rho.Printer.CONNECTION_TYPE_ON_BOARD, Rho.Printer.CONNECTION_TYPE_TCP];
+        var conn_types = [Rho.Printer.CONNECTION_TYPE_BLUETOOTH, Rho.Printer.CONNECTION_TYPE_ON_BOARD, Rho.Printer.CONNECTION_TYPE_TCP, Rho.Printer.CONNECTION_TYPE_USB];
         for (var i = conn_types.length - 1; i >= 0; i--) {
 
             $('#dev_conn_type')

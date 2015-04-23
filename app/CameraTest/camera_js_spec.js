@@ -1,825 +1,847 @@
-describe("Camera API Manual Tests", function(){
-	var enumData = Rho.Camera.enumerate();
-	var imagestatus = '';
-	var callbackData;
-	var callbackTriggered = false;
-	var callbackTimeout = 30000;
-	var camArray = "";
-	var imageUriData = null;
-	var camtype;
-	var sound = "";
-    var camerapath = Rho.Application.modelFolderPath("CameraTest");
-    if(isWindowsMobilePlatform()){
-    	sound = Rho.RhoFile.join(camerapath, "/samplemedia/cheering.wav");
-    }else{
-    	sound = Rho.RhoFile.join(camerapath, "/samplemedia/glassbreak.mp3");
-    }
-    var sampleimage = Rho.RhoFile.join(camerapath, "/samplemedia/zebratechnologies.jpg");
-	var callbackFunc = function(cbData){
-		callbackData = cbData;
-		callbackTriggered = true;
-		imagestatus = cbData.status;
-		imageUriData = cbData.imageUri;
-		document.getElementById('imageUri').src = imageUriData;
+describe("Camera JS API Test", function() {
+	var	enableflag = false;
+	var	disableflag = false;
+	var getpropertiesdata ='';
+	var getpropertydata ='';
+    var enumData = Rho.Camera.enumerate();
+    var callbackstatus = false;
+	var getcallbackdata = '';
+	var defaultobj;
+    var callbackgetproperties = function (data){
+		getpropertiesdata = JSON.stringify(data);
+		callbackstatus = true;
 	};
-	var getCallbackData = function(camArr){
-		for (var i = 0; i < camArr.length; i++) {
-			camArray += (i+1).toString() + ") Camera Type: " + enumData[i].getProperty('cameraType') +  "; ";
-		};
-		callbackTriggered = true;
-	};
-	beforeEach(function(){
-		callbackData = "";
-		imageUriData = null;
-		callbackTriggered = false;
-		document.getElementById('imageUriDiv').innerHTML = '<img src="" id="imageUri"></img>';
-	});
-	afterEach(function(){
-		document.getElementById('imageUriDiv').innerHTML = '<img src="" id="imageUri"></img>';
-	});
-
-	describe("Select picture using choosePicture method | Note: NA for CE platform", function() {
-		it("VT200-0576 | Should call choosePicture with 'outputFormat' property value as dataUri", function(){
-			var spec = new ManualSpec(jasmine, window.document);
-        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-            spec.addStep("Press 'RunTest' button");
-            spec.addStep("Choose the image.");
-            spec.addStep("Check the image on view");
-            spec.addExpectation('The chosen image should be returned as Data URI object.');
-            spec.displayScenario();
-            spec.waitForButtonPressing("Run test");
-            var param = {
-            	'outputFormat': Rho.Camera.OUTPUT_FORMAT_DATAURI
-        	};
-			runs(function(){
-				Rho.Camera.choosePicture(param, callbackFunc);
-			});
-			waitsFor(function(){
-				return callbackTriggered;
-			},"waiting for callback data", callbackTimeout);
-			runs(function(){
-				spec.addResult("status : ", callbackData.status);
-				spec.addResult("message : ", callbackData.message);
-				spec.addResult("imageHeight : ", callbackData.imageHeight);
-				spec.addResult("imageWidth : ", callbackData.imageWidth);
-				spec.addResult("imageFormat : ", callbackData.imageFormat);
-				spec.addResult("imageUri : ", callbackData.imageUri);
-				spec.displayResults();
-                spec.waitForResponse();
-			});
-		});
-
-		if(isApplePlatform()){
-			
-			it("VT200-0577 | Should call choosePicture with property as colorModel: grayscale", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addPrecondition("Call choosePicture with propertyhash as colorModel:grayscale and callback.");
-	            spec.addStep("Choose the image.");
-	            spec.addExpectation('All images should be shown in the gallery');
-	            spec.addExpectation('By selecting any of the image, should be displayed in grayscale with the test application.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-	            var param = {
-	            	'colorModel': Rho.Camera.COLOR_MODEL_GRAYSCALE,
-	            	'outputFormat':'dataUri',
-	            	'enableEditing':false
-	            };
-				runs(function(){
-					Rho.Camera.choosePicture(param, callbackFunc);
-				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-			it("VT200-0578 | Should call choosePicture with property as desiredHeight and desiredWidth", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addPrecondition("Call choosePicture with propertyhash as desiredHeight:640, desiredWidth:480 and callback.");
-	            spec.addStep("Choose the image.");
-	            spec.addExpectation('Should be saved with the resolution 640x480.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-				var param = {
-					'desiredHeight':640,
-					'desiredWidth':480, 
-					'outputFormat': 'image',
-					'enableEditing': false
-				};	            
-				runs(function(){
-					Rho.Camera.choosePicture(param, callbackFunc);
-				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-			it("VT200-0579 | Should call choosePicture with property as enableEditing as false", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addPrecondition("Call choosePicture with propertyhash as 'enableEditing':false and callback.");
-	            spec.addStep("Choose the image.");
-	            spec.addExpectation('After selecting image should not be avaiable for editting.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-				var param = {
-					'enableEditing':false
-				};				
-				runs(function(){
-					Rho.Camera.choosePicture(param, callbackFunc);
-				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-		};
-	});
-
-	if(isAndroidPlatform() || isApplePlatform()){
-		describe("copyImageToDeviceGallery method | " , function() {
-			it("VT200-0580 | Should copy image to device gallery from the device", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-				spec.addGoal(jasmine.getEnv().currentSpec.description);
-				spec.addStep("Press 'RunTest' button");
-			    spec.addStep("NOTE: image has been kept with the application. No need to copy to device separately."); 
-			    spec.addExpectation("zebratechnologies.jpg' should get copied in to the gallery.");
-			    spec.displayScenario();
-			    spec.waitForButtonPressing("Run test");
-				runs(function(){
-					Rho.Camera.copyImageToDeviceGallery(sampleimage);
-					spec.waitForResponse();
-				});
-			});
-		});
+	var callbackgetproperty = function (data){
+		getpropertydata = data;
+		callbackstatus = true;
 	};
 
-	describe("Enumerate Camera with callback ", function() {
-
-		it("VT200-0581 | Should enumerate with callback", function(){
-			var spec = new ManualSpec(jasmine, window.document);
-        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-            spec.addStep("Press 'RunTest' button");
-            spec.addStep("Check for the returned object.");
-            spec.addExpectation('The returned object should contain the available cameras of device.');
-            spec.displayScenario();
-            spec.waitForButtonPressing("Run test");
-			runs(function(){
-				Rho.Camera.enumerate(getCallbackData);
-			});
-			waitsFor(function(){
-				return callbackTriggered;
-			},"waiting for callback data", 2000);
-			runs(function(){
-				spec.addResult("enumerated cameras: ", camArray);
-				spec.displayResults();
-                spec.waitForResponse();
-			});		            
-		});
-	});
-
-	describe("getCameraByType method", function() {
-
-		if (!isWindowsMobilePlatform()) {
-
-			it("VT200-0582 | Should call getCameraByType with back and callback as function ", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addStep("If return value is back camera call takePicture using return value");
-	            spec.addExpectation('The return values should be back camera object and the back camera should open to take picture.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-	            var cameratype;
-	            var cameraTypeCb = function(camtyp){
-					cameratype = camtyp;
-					callbackTriggered = true;
-				};
-	            runs(function(){
-					Rho.Camera.getCameraByType('back', cameraTypeCb);
+    for (var j = 0;j<enumData.length;j++){
+		var arrCAM = getApplicableProperties(enumData[j]);
+		(function(enumObject,arrCamera){
+			var camname = enumObject.getProperty('cameraType');
+			var camtype = enumObject.getProperty('ID');
+		
+			describe("Camera default check", function() {
+				it("Call getDefault |" + camtype, function() {
+				    Rho.Camera.setDefault(enumObject);
+				    defaultobj = Rho.Camera.getDefault();
+					expect(camtype).toEqual(defaultobj.getProperty('ID'));
 				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", 10000);
-				runs(function(){
-					callbackTriggered = false;
-					cameratype.takePicture({}, callbackFunc);
+				it("Check default values of all writeable property |", function() {
+					runs(function() {
+					    if(isWindowsMobilePlatform()){
+						    expect(defaultobj.previewLeft).toBeGreaterThan(0);
+							expect(defaultobj.previewTop).toBeGreaterThan(0);
+							expect(defaultobj.previewWidth).toBeGreaterThan(0);
+							expect(defaultobj.previewHeight).toBeGreaterThan(0);
+					    };
+					    if(isApplePlatform()){
+					    	expect(defaultobj.saveToDeviceGallery).toEqual(false);
+					    	expect(defaultobj.colorModel).toEqual('rgb');
+					    	expect(defaultobj.enableEditing).toEqual(true);
+					    };
+					    if(isAndroidPlatform()){
+					    	expect(defaultobj.saveToDeviceGallery).toEqual(false);
+					    	expect(defaultobj.colorModel).toEqual('rgb');
+					    	expect(defaultobj.useSystemViewfinder).toEqual(false);
+					    };
+					    //expect(defaultobj.flashMode).toEqual('off');
+						expect(defaultobj.compressionFormat).toEqual('jpg');
+						//expect(defaultobj.desiredHeight).toBeGreaterThan(0);
+						//expect(defaultobj.desiredWidth).toBeGreaterThan(0);
+						expect(defaultobj.outputFormat).toEqual('image');
+					});
 				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-			it("VT200-0583 | Should call getCameraByType with front and without callback function ", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addStep("If return value is Front camera call takepicture using return value");
-	            spec.addExpectation('The return values should be front camera object and the front camera should open to take picture.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-	            var cameratype;
-	            runs(function(){
-					cameratype = Rho.Camera.getCameraByType('front');
-					cameratype.takePicture({}, callbackFunc);
-				});
-/*				setTimeout(function(){
-					cameratype.takePicture({}, callbackFunc);
-				},5000);*/
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-		};
-
-		if (isWindowsMobilePlatform()) {
-			it("VT200-0584 | Should call getCameraByType with color and callback as function", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addStep("If return value is color camera call takepicture using return value");
-	            spec.addExpectation('The return values should be color camera object and the color camera should open to take picture.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-	            var cameratype;
-	            var cameraTypeCb = function(camtyp){
-					cameratype = camtyp;
-					callbackTriggered = true;
-				};
-	            runs(function(){
-					Rho.Camera.getCameraByType('color', cameraTypeCb);
-				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", 10000);
-				runs(function(){
-					callbackTriggered = false;
-					cameratype.takePicture({}, callbackFunc);
-				});
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-			it("VT200-0585 | Should call getCameraByType with imager and without callback function ", function(){
-				var spec = new ManualSpec(jasmine, window.document);
-	        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-	            spec.addStep("Press 'RunTest' button");
-	            spec.addStep("If return value is imager camera call takepicture using return value");
-	            spec.addExpectation('The return values should be imager camera object and the imager camera should open to take picture.');
-	            spec.displayScenario();
-	            spec.waitForButtonPressing("Run test");
-	            var cameratype;
-	            runs(function(){
-					cameratype = Rho.Camera.getCameraByType('imager');
-				});
-				setTimeout(function(){
-					cameratype.takePicture({}, callbackFunc);
-				},5000);
-				waitsFor(function(){
-					return callbackTriggered;
-				},"waiting for callback data", callbackTimeout);
-				runs(function(){
-					spec.addResult("status : ", callbackData.status);
-					spec.addResult("message : ", callbackData.message);
-					spec.addResult("imageHeight : ", callbackData.imageHeight);
-					spec.addResult("imageWidth : ", callbackData.imageWidth);
-					spec.addResult("imageFormat : ", callbackData.imageFormat);
-					spec.addResult("imageUri : ", callbackData.imageUri);
-					spec.displayResults();
-	                spec.waitForResponse();
-				});
-			});
-		};			
-	});
-
-	for (var j = 0; j<enumData.length; j++){
-		(function(objCAM){ 
-		   	var camid = objCAM.getProperty('ID');
-		   	var camtype = objCAM.getProperty('cameraType');
-		   	if(isWindowsMobilePlatform()){
-				describe("showPreview, Capture & hidePreview methods | using " + camid + camtype , function() {
-					it("VT200-0586 | Should call showPreview with preview window values, ouputFomat:dataUri & captureSound | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-			        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-			        	spec.addPrecondition("Call showPreview() with properties previewLeft:-10, previewTop:-10, previewWidth:40, previewHeight:80, outputFormat:dataUri, captureSound: <audiofile given with teh app>.");
-			            spec.addStep("Press 'RunTest' button");
-			            spec.addStep("Note: Capture will be called automatically & hidePreview is called after the capture");
-			            spec.addStep("Capture will happen, then Check for the returned callback status & property set");
-			            spec.addExpectation('Preview window should be as set(left:-10, top:-10, width:40 & height:80).');
-			            spec.addExpectation('Should play a wav file after capture.');
-			            spec.addExpectation('The returned status should be OK and captured image should be displayed as dataUri. .');
-			            spec.displayScenario();
-			            spec.waitForButtonPressing("Run test");
-			            var param = {
-							'previewLeft':-10,
-							'previewTop':-10,
-							'previewWidth':40,
-							'previewHeight':80,
-							'outputFormat':'dataUri',
-							'captureSound': sound
+				it("Check values of all read only property |", function() {
+					runs(function() {
+						if(isWindowsMobilePlatform()){
+							var type = "imager color";
+						}else{
+							var type = "back front";						
 						};
-						runs(function(){
-							objCAM.showPreview(param);
-							setTimeout(function(){
-								objCAM.capture(callbackFunc);
-							},10000);
+						expect(type).toContain(enumObject.cameraType);
+					    if(enumObject.cameraType != 'imager'){
+					    	expect(enumObject.maxHeight).toBeGreaterThan(0);
+							expect(enumObject.maxWidth).toBeGreaterThan(0);
+					    	if(!isApplePlatform()){
+						    	var resolution = enumObject.supportedSizeList;
+								expect(resolution.length).toBeGreaterThan(0);
+								expect(resolution[0].width).toBeGreaterThan(0);
+								expect(resolution[0].height).toBeGreaterThan(0);
+							};
+						};
+					});
+				});
+           	});
+
+	    	if(isWindowsMobilePlatform()){
+				describe("Call capture method with callback | "+ camtype +": "+ camname, function() {
+					var capturedata = {};
+					var capturestatus = false;
+					enumObject.previewTop = 20;
+					enumObject.previewLeft = 20;
+					enumObject.previewWidth = 100;
+					enumObject.previewHeight = 100;
+					var captureCallback = function (data){
+						capturedata.status = data.status;
+						capturedata.imageHeight = data.imageHeight;
+						capturedata.imageWidth = data.imageWidth;
+						capturedata.imageFormat = data.imageFormat;
+						capturedata.message = data.message;
+						capturedata.imageUri = data.imageUri;
+						capturestatus = true;
+					};
+
+					beforeEach(function() {
+					    capturedata = {};
+					    capturestatus = false;
+					});
+
+					var data1 = [{"compressionFormat":"png"}, {"compressionFormat":"jpg"}, {"outputFormat":"image"}, {"outputFormat":"dataUri"}, 
+					{"aimMode":"off"}, {"flashMode":"off"}];
+
+					for(i=0 ; i<data1.length ; i++ ){
+						it("Call capture method with callback for | " + JSON.stringify(data1[i]) , function() {
+							runs(function() {
+						    	var props = data1[i];
+						    	for (var property in props){
+						    		enumObject.showPreview({property:props[property]});	
+						    	};
+						    	setTimeout(function(){
+						    		enumObject.capture(captureCallback);
+						    	},6000);
+							});
+							waitsFor(function(){
+								return capturestatus;
+							},"waiting for callback data", 12000);
+							runs(function() {	
+								expect(capturedata.status).toEqual('ok');
+								expect(capturedata.message).toEqual('');
+								expect(capturedata.imageHeight).toBeGreaterThan(0);
+								expect(capturedata.imageWidth).toBeGreaterThan(0);
+								if ((data1[i]['outputFormat']) && (data1[i]['outputFormat'] != 'dataUri')){
+									if ((data1[i]['compressionFormat']) == 'png' && (isApplePlatform())){
+										expect(capturedata.imageUri).toContain('.png');}
+									else{
+										expect(capturedata.imageUri).toContain('.jpg');
+									};
+								}else{
+									expect(capturedata.imageUri).not.toEqual('');
+								};
+								enumObject.hidePreview();
+							});
+						});
+					};
+
+					var data2 = [{"compressionFormat":""}, {"outputFormat":""}, {"captureSound":""},
+					{"aimMode":""}, {"flashMode":""},{"desiredHeight":""},{"desiredWidth":""}];
+
+					for(i=0 ; i<data2.length ; i++ ){
+						it("Call capture method with callback for | " + JSON.stringify(data2[i]) , function() {
+							runs(function() {
+						    	var props = data2[i];
+								for (var property in props){
+						    		enumObject.showPreview({property:props[property]});	
+						    	};
+						    	setTimeout(function(){
+						    		enumObject.capture(captureCallback);
+						    	},6000);
+							});
+							waitsFor(function(){
+								return capturestatus;
+							},"waiting for callback data", 12000);
+							runs(function() {	
+								expect(capturedata.status).toEqual('ok');
+								expect(capturedata.message).toEqual('');
+								expect(capturedata.imageHeight).toBeGreaterThan(0);
+								expect(capturedata.imageWidth).toBeGreaterThan(0);
+								expect(capturedata.imageUri).not.toEqual('');
+								enumObject.hidePreview();
+							});
+						});
+					};
+
+					var datainval = [{"compressionFormat":"invalid"}, {"outputFormat":"invalid"},
+					{"captureSound":"file://application/alarm.waved"},
+					{"previewTop":'10'}, {"previewWidth":'20'} ,{"previewLeft":'10'}, {"previewHeight":'60'},
+					{"aimMode":"invalid"}, {"flashMode":"invalid"}];
+
+					for(i=0 ; i<datainval.length ; i++ ){
+						it("Call capture method with callback for invalid values | " + JSON.stringify(datainval[i]) , function() {
+							runs(function() {
+						    	var props = datainval[i];
+						    	for (var property in props){
+						    		enumObject.showPreview({property:props[property]});	
+						    	};
+						    	setTimeout(function(){
+						    		enumObject.capture(captureCallback);
+						    	},6000);
+							});
+							waitsFor(function(){
+								return capturestatus;
+							},"waiting for callback data", 12000);
+							runs(function() {	
+								expect(capturedata.status).toEqual('ok');
+								expect(capturedata.message).toEqual('');
+								expect(capturedata.imageHeight).toBeGreaterThan(0);
+								expect(capturedata.imageWidth).toBeGreaterThan(0);
+								expect(capturedata.imageUri).not.toEqual('');
+								expect('jpg png').toContain(capturedata.imageFormat);
+								enumObject.hidePreview();
+							});
+						});
+					};
+
+					var data3 = [{"previewTop":250, "previewWidth":250 ,"previewLeft":300, "previewHeight":200},
+					{"previewTop":-25, "previewWidth":-250 ,"previewLeft":-30, "previewHeight":-200},
+					{"previewTop":0, "previewWidth":0 ,"previewLeft":0, "previewHeight":0},
+					{"previewTop":10, "previewWidth":20 ,"previewLeft":-10, "previewHeight":-60}];
+
+					for(i=0 ; i<data3.length ; i++ ){
+						it("Call capture method with callback for | " + JSON.stringify(data3[i]) , function() {
+							runs(function() {
+						    	var props = data3[i];
+						    	var obj = {};
+						    	for (var property in props){
+						    		obj.property = props[property];
+						    	};
+								enumObject.showPreview(obj);
+						    	setTimeout(function(){
+						    		enumObject.capture(captureCallback);
+						    	},6000);
+							});
+							waitsFor(function(){
+								return capturestatus;
+							},"waiting for callback data", 12000);
+							runs(function() {	
+								expect(capturedata.status).toEqual('ok');
+								expect(capturedata.message).toEqual('');
+								expect(capturedata.imageHeight).toBeGreaterThan(0);
+								expect(capturedata.imageWidth).toBeGreaterThan(0);
+								expect(capturedata.imageUri).not.toEqual('');
+								enumObject.hidePreview();
+							});
+						});
+					};					
+
+					var modelfolder = Rho.Application.modelFolderPath("CameraTest");
+					var tempFolder = Rho.RhoFile.join(modelfolder, "tempFolder");
+					var fileList = ['cameraimage', 'camera@#$', '_123Image', '12_image', 'QWERTY'];
+					for(i=0 ; i<fileList.length ; i++ ){
+						if (Rho.RhoFile.exists(tempFolder) == false){
+							Rho.RhoFile.makeDir(tempFolder);
+						};
+						var file = Rho.RhoFile.join(tempFolder, fileList[i]);
+						var camefile = fileList[i];
+						if(Rho.RhoFile.exists(file) == true){
+							Rho.RhoFile.deleteFile(file);
+						};
+
+						it("Call capture method with fileName : " + file , function() {
+							runs(function() {
+						    	enumObject.showPreview({'outputFormat' : 'image', 'fileName' : file});
+
+						    	setTimeout(function(){
+						    		enumObject.capture(captureCallback);
+						    	},6000);
+							});
+							waitsFor(function(){
+								return capturestatus;
+							},"waiting for callback data", 12000);
+							runs(function() {	
+								expect(capturedata.status).toEqual('ok');
+								expect(capturedata.message).toEqual('');
+								expect(capturedata.imageHeight).toBeGreaterThan(0);
+								expect(capturedata.imageWidth).toBeGreaterThan(0);
+								expect(capturedata.imageUri).toContain(camefile);
+								enumObject.hidePreview();
+							});
+						});
+					};
+
+					it("Call capture method with invalid fileName path : " + file , function() {
+						runs(function() {
+					    	enumObject.showPreview({"fileName" : "\\Programfiles\\invalidpath\\camimage"});
+					    	setTimeout(function(){
+					    		enumObject.capture(captureCallback);
+					    	},6000);
 						});
 						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 22000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-							objCAM.hidePreview();
-			                spec.waitForResponse();
-						});
-					});
-					it("VT200-0587 | Should call showPreview with flash: on, aimmode:on (if imager), desiredHeight & desiredWidth set | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-			        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-			        	spec.addPrecondition("Call showPreview() with properties previewLeft:10, previewTop:10, previewWidth:100, previewHeight:60, desiredHeight:120, desiredWidth:240, outputFormat:image, flashMode:on, aimMode:on, captureSound:''.");
-			            spec.addStep("Press 'RunTest' button");
-			            spec.addStep("Note: Capture will be called automatically & hidePreview is called after the capture");
-			            spec.addStep("Capture will happen, then Check for the returned callback status & property set");
-			            spec.addExpectation('Flash should be ON if available or aim ON in case of imager.');
-			            spec.addExpectation('The returned status should be OK');
-			            spec.addExpectation('ImagePath would be the file saved path in the device');
-			            spec.addExpectation('imageHeight: 120 & imageWidth: 240.');
-			            spec.addExpectation('After capture there should not be any wav file played.');
-			            spec.displayScenario();
-			            spec.waitForButtonPressing("Run test");
-			            var param = {
-							'previewLeft':10,
-							'previewTop':10,
-							'previewWidth':100,
-							'previewHeight':60,
-							'desiredHeight':120,
-							'desiredWidth':240,
-							'outputFormat':'image',
-							'flashMode':'on',
-							'aimMode':'on',
-							'captureSound':''
-						};
-						runs(function(){
-							objCAM.showPreview(param);
-							setTimeout(function(){
-								objCAM.capture(callbackFunc);
-							},10000);
-						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 22000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-							objCAM.hidePreview();
-			                spec.waitForResponse();
-						});
-					});
-					it("VT200-0588 | Should hide preview by using hidePreview | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-			        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-			            spec.addStep("Press 'RunTest' button");
-			            spec.addExpectation('Viewfinder should get hidden around 10secs.');
-			            spec.displayScenario();
-			            spec.waitForButtonPressing("Run test");
-			            runs(function(){
-							objCAM.showPreview();
-							setTimeout(function(){
-								objCAM.hidePreview();
-							},10000);
-						});
-						runs(function(){
-			                spec.waitForResponse();
+							return capturestatus;
+						},"waiting for callback data", 12000);
+						runs(function() {	
+							expect(capturedata.status).toEqual('error');
+							expect(capturedata.message).not.toEqual('');
+							enumObject.hidePreview();
 						});
 					});
 				});
 			};
 
-			describe("takePicture method | using " + camid + camtype , function() {
-
-				it("VT200-0589 | Should call takePicture | using " + camid + camtype , function(){
-					Rho.Camera.desiredHeight = 480;
-					Rho.Camera.desiredWidth = 640;
-					var spec = new ManualSpec(jasmine, window.document);
-		        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-		            spec.addStep("Press 'RunTest' button");
-		            spec.addStep("desiredHeight : " + Rho.Camera.desiredHeight);
-		            spec.addStep("desitedWidth : " + Rho.Camera.desiredWidth);
-		            spec.addStep("compressionFormat : " + Rho.Camera.compressionFormat);
-		            spec.addStep("Capture the image & Check for the returned status.");
-		            spec.addExpectation('The preview should be in Full Screen.');
-		            spec.addExpectation('Callback data :');
-		            spec.addExpectation('status:OK');
-		            spec.addExpectation('message: to be empty');
-		            spec.addExpectation('imageWidth & imageHeight (as seen with the steps)');
-		            spec.addExpectation('imageFormat(as seen in the steps) & imageUri(absolute image path with timestamp) of the saved image');
-		            spec.displayScenario();
-		            spec.waitForButtonPressing("Run test");
-		            runs(function(){
-						objCAM.takePicture({}, callbackFunc);
-					});
-					waitsFor(function(){
-						return callbackTriggered;
-					},"waiting for callback data", 10000);
-					runs(function(){
-						spec.addResult("status : ", callbackData.status);
-						spec.addResult("message : ", callbackData.message);
-						spec.addResult("imageHeight : ", callbackData.imageHeight);
-						spec.addResult("imageWidth : ", callbackData.imageWidth);
-						spec.addResult("imageFormat : ", callbackData.imageFormat);
-						spec.addResult("imageUri : ", callbackData.imageUri);
-						spec.displayResults();
-		                spec.waitForResponse();
-					});
-				});
-				it("VT200-0590 | Should call takePicture with flashMode FLASH_ON | using " + camid + camtype , function(){
-					var spec = new ManualSpec(jasmine, window.document);
-		        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-		            spec.addStep("Press 'RunTest' button");
-		            spec.addStep("Capture any image in low illumination area");
-		            spec.addExpectation('Flash should be on while taking the image.');
-		            spec.displayScenario();
-		            spec.waitForButtonPressing("Run test");
-		            var param = {
-		            	'flashMode':Rho.Camera.FLASH_ON
-		            };
-					runs(function(){
-						objCAM.takePicture(param, callbackFunc);
-					});
-					waitsFor(function(){
-						return callbackTriggered;
-					},"waiting for callback data", 10000);
-					runs(function(){
-						spec.addResult("status : ", callbackData.status);
-						spec.addResult("message : ", callbackData.message);
-						spec.addResult("imageHeight : ", callbackData.imageHeight);
-						spec.addResult("imageWidth : ", callbackData.imageWidth);
-						spec.addResult("imageFormat : ", callbackData.imageFormat);
-						spec.addResult("imageUri : ", callbackData.imageUri);
-						spec.displayResults();
-		                spec.waitForResponse();
-					});	
-				});
-
-				if (isWindowsMobilePlatform()){
-
-					it("VT200-0591 | Should call takePicture with aimMode AIM_ON | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-			        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-			            spec.addStep("Press 'RunTest' button");
-			            spec.addStep("Capture any image.");
-			            spec.addExpectation('Aiming should be ON. Reticle should be there. Image should be catured..');
-			            spec.displayScenario();
-			            spec.waitForButtonPressing("Run test");
-			            var param = {
-			            	'aimMode':Rho.Camera.AIM_ON
-			            };
-						runs(function(){
-							objCAM.takePicture(param, callbackFunc);
+			describe("Camera property using set/getProperty for "+ camtype +": "+ camname, function() {
+				for (var i=0;i<arrCamera.length;i++){
+					(function(idx){
+						it(arrCamera[idx]['testName'], function() {
+						    enumObject.setProperty(arrCamera[idx]['propertyName'],arrCamera[idx]['propertyValue']);
+							var data = enumObject.getProperty(arrCamera[idx]['propertyName']);
+							expect(data).toEqual(arrCamera[idx]['expectedResult']);
 						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 10000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-			                spec.waitForResponse();
-						});
-					});
-				};
-
-				it("VT200-0592 | Should call takePicture with outputFormat:dataUri  | using " + camid + camtype , function(){
-					var spec = new ManualSpec(jasmine, window.document);
-		        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-		            spec.addStep("Press 'RunTest' button");
-		            spec.addStep("Capture any image.");
-		            spec.addExpectation('Image should be displayed as dataUri.');
-		            spec.displayScenario();
-		            spec.waitForButtonPressing("Run test");
-		            var param = {
-		            	'outputFormat':'dataUri'
-		            };
-					runs(function(){
-						objCAM.takePicture(param, callbackFunc);
-					});
-					waitsFor(function(){
-						return callbackTriggered;
-					},"waiting for callback data", 10000);
-					runs(function(){
-						spec.addResult("status : ", callbackData.status);
-						spec.addResult("message : ", callbackData.message);
-						spec.addResult("imageHeight : ", callbackData.imageHeight);
-						spec.addResult("imageWidth : ", callbackData.imageWidth);
-						spec.addResult("imageFormat : ", callbackData.imageFormat);
-						spec.addResult("imageUri : ", callbackData.imageUri);
-						spec.displayResults();
-		                spec.waitForResponse();
-					});
-				});
-				it("VT200-0593 | Should call takePicture with desiredHeight 480 and desiredWidth 640 | using " + camid + camtype , function(){
-					var spec = new ManualSpec(jasmine, window.document);
-		        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-		            spec.addStep("Press 'RunTest' button");
-		            spec.addStep("Capture any image.");
-		            if(!isApplePlatform()){
-		            	spec.addStep("supportedSizeList: "+ JSON.stringify(Rho.Camera.supportedSizeList));
-		            }
-		            spec.addStep("Check for the returned image height and width value. Open the saved image and check for height and width.");
-		            spec.addExpectation("The returned image height and width should be same as the saved image");
-		            spec.addExpectation("And the returned value should be imageHeight: 480 and imageWidth: 640 (if supported by the device)");
-		            spec.addExpectation("Or nearest supported resolution which is listed in steps");
-		            spec.displayScenario();
-		            spec.waitForButtonPressing("Run test");
-		            var param = {
-		            	'desiredHeight':480,
-		            	'desiredWidth':640
-		        	};
-					runs(function(){
-						objCAM.takePicture(param, callbackFunc);
-					});
-					waitsFor(function(){
-						return callbackTriggered;
-					},"waiting for callback data", 10000);
-					runs(function(){
-						spec.addResult("status : ", callbackData.status);
-						spec.addResult("message : ", callbackData.message);
-						spec.addResult("imageHeight : ", callbackData.imageHeight);
-						spec.addResult("imageWidth : ", callbackData.imageWidth);
-						spec.addResult("imageFormat : ", callbackData.imageFormat);
-						spec.addResult("imageUri : ", callbackData.imageUri);
-						spec.displayResults();
-		                spec.waitForResponse();
-					});	
-				});
-
-				if(isApplePlatform()){
-					it("VT200-0594 | Should call takePicture with enableEditing as false | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-			        	spec.addGoal(jasmine.getEnv().currentSpec.description);
-			            spec.addStep("Press 'RunTest' button");
-			            spec.addStep("Capture any image.");
-			            spec.addStep("check for photo capture image customizing.");
-			            spec.addExpectation('It should not Enable post photo capture image customizing.');
-			            spec.displayScenario();
-			            spec.waitForButtonPressing("Run test");
-			            var param = {
-			            	'enableEditing':false
-			            };
-						runs(function(){
-							objCAM.takePicture(param, callbackFunc);
-						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 10000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-			                spec.waitForResponse();
-						});						
-					});
-				};
-
-				if (isAndroidPlatform() || isApplePlatform()) {
-					it("VT200-0595 | Should call takePicture with colorModel as grayscale | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-						spec.addGoal(jasmine.getEnv().currentSpec.description);
-					    spec.addStep("Press 'RunTest' button");
-					    spec.addStep("Check for the preview screen color and saved image.");
-					    spec.addExpectation('The camera screen & saved image should be in grayscale (Black and White).');
-					    spec.displayScenario();
-					    spec.waitForButtonPressing("Run test");
-					    var param = {
-					    	'colorModel':'grayscale'
-					    };
-						runs(function(){
-							objCAM.takePicture(param, callbackFunc);
-						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 10000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-					        spec.waitForResponse();
-						});					
-					});
-				};
-
-				it("VT200-0596 | Should capture image by calling takePicture() method with compressionFormat png. | using " + camid + camtype , function(){
-					var spec = new ManualSpec(jasmine, window.document);
-					spec.addGoal(jasmine.getEnv().currentSpec.description);
-				    spec.addStep("Press 'RunTest' button");
-				    spec.addStep("Capture the image");
-				    spec.addExpectation('The imageFormat returned should be .png in iOS. Other platform supports only jpg');
-				    spec.displayScenario();
-				    spec.waitForButtonPressing("Run test");
-				    var param = {
-				    	'compressionFormat':'png'
-				    };
-					runs(function(){
-						objCAM.takePicture(param, callbackFunc);
-					});
-					waitsFor(function(){
-						return callbackTriggered;
-					},"waiting for callback data", 10000);
-					runs(function(){
-						spec.addResult("status : ", callbackData.status);
-						spec.addResult("message : ", callbackData.message);
-						spec.addResult("imageHeight : ", callbackData.imageHeight);
-						spec.addResult("imageWidth : ", callbackData.imageWidth);
-						spec.addResult("imageFormat : ", callbackData.imageFormat);
-						spec.addResult("imageUri : ", callbackData.imageUri);
-						spec.displayResults();
-				        spec.waitForResponse();
-					});
-				});
-
-				if(isWindowsMobilePlatform() || isAndroidPlatform()){
-
-					it("VT200-0597 | Should capture image by calling takePicture() method with captureSound | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-						spec.addGoal(jasmine.getEnv().currentSpec.description);
-						spec.addStep("Press 'RunTest' button");
-					    spec.addStep("Check for the returned status.");
-					    spec.addExpectation('After successful capture, should play a mp3/wav file after capture.');
-					    spec.displayScenario();
-					    spec.waitForButtonPressing("Run test");
-					    var param = {
-					    	'outputFormat':'image', 
-					    	'captureSound' : sound
-					    };
-						runs(function(){
-							objCAM.takePicture(param, callbackFunc);
-						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 10000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-					        spec.waitForResponse();
-						});
-					});
-				};
-
-				if(isAndroidPlatform()){
-					it("VT200-0598 | Should capture image by calling takePicture() method with useSystemViewfinder true | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-						spec.addGoal(jasmine.getEnv().currentSpec.description);
-						spec.addStep("Press 'RunTest' button");
-					    spec.addStep("Check for the returned status.");
-					    spec.addExpectation("Uses the system Camera application to take a picture instead of rhodes\' camera");
-					    spec.displayScenario();
-					    spec.waitForButtonPressing("Run test");
-					    var param = {
-					    	'outputFormat':'image', 
-					    	'captureSound' : '', 
-					    	'useSystemViewfinder' : true
-					    };
-						runs(function(){
-							objCAM.takePicture(param, callbackFunc);
-						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 10000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-					        spec.waitForResponse();
-						});
-					});
-				};
-
-				if(isAndroidPlatform() || isApplePlatform()){
-
-					it("VT200-0599 | Should capture image by calling takePicture() method with saveToDeviceGallery true | using " + camid + camtype , function(){
-						var spec = new ManualSpec(jasmine, window.document);
-						spec.addGoal(jasmine.getEnv().currentSpec.description);
-						spec.addStep("Press 'RunTest' button");
-					    spec.addStep("Check for the returned status.");
-					    spec.addExpectation('Image captured should be added to the device gallery');
-					    spec.displayScenario();
-					    spec.waitForButtonPressing("Run test");
-					    var param = {
-					    	'outputFormat':'image', 
-					    	'saveToDeviceGallery' : true
-					    };
-						runs(function(){
-							objCAM.takePicture(param, callbackFunc);
-						});
-						waitsFor(function(){
-							return callbackTriggered;
-						},"waiting for callback data", 10000);
-						runs(function(){
-							spec.addResult("status : ", callbackData.status);
-							spec.addResult("message : ", callbackData.message);
-							spec.addResult("imageHeight : ", callbackData.imageHeight);
-							spec.addResult("imageWidth : ", callbackData.imageWidth);
-							spec.addResult("imageFormat : ", callbackData.imageFormat);
-							spec.addResult("imageUri : ", callbackData.imageUri);
-							spec.displayResults();
-					        spec.waitForResponse();
-						});
-					});
+					})(i);
 				};
 			});
 
-		})(enumData[j]);
+			describe("Camera property Using set/getProperties for "+ camtype +": "+ camname, function() {
+				for (var i=0;i<arrCamera.length;i++){
+					(function(idx){
+						it(arrCamera[idx]['testName'], function() {
+							var propertyName = arrCamera[idx]['propertyName'];
+							var propertyValue = arrCamera[idx]['propertyValue'];
+							if (propertyValue == 'true')
+								var strProperty = '{"'+propertyName+'" : '+true+'}';
+							else if (propertyValue == 'false')
+								var strProperty = '{"'+propertyName+'" : '+false+'}';
+							else if (!isNaN(propertyValue)){
+								propertyValue = parseInt(propertyValue);
+								var strProperty = '{"'+propertyName+'" :'+propertyValue+'}';
+							}
+							else{
+								var strProperty = '{"'+propertyName+'" : "'+propertyValue+'"}'
+							};
+							var objProperty = JSON.parse(strProperty);
+							enumObject.setProperties(objProperty);
+							var strGetProperty = '["'+arrCamera[idx]['propertyName']+'"]';
+							var objGetProperty = JSON.parse(strGetProperty);
+							var data = enumObject.getProperties(objGetProperty);
+							data = data[arrCamera[idx]['propertyName']];
+							expect(data).toEqual(arrCamera[idx]['expectedResult']);
+						});
+					})(i);
+				};
+			});
+
+			describe("Camera property setting Directly for "+ camtype +": "+ camname, function() {
+
+				for (var i=0;i<arrCamera.length;i++){
+					(function(idx){
+						it(arrCamera[idx]['testName'], function() {
+							var propertyName = arrCamera[idx]['propertyName'];
+							var propertyValue = arrCamera[idx]['propertyValue'];
+							var result;
+							try{
+								if (propertyValue == 'true'){
+									eval(enumObject)[propertyName] = true;
+									result = true;
+								}else if (propertyValue == 'false'){
+									eval(enumObject)[propertyName] = false;
+									result = false;
+								}else if (!isNaN(propertyValue)){
+									propertyValue = parseInt(propertyValue);
+									eval(enumObject)[propertyName] = propertyValue;	
+									 result = parseInt(arrCamera[idx]['expectedResult']);
+								}
+								else{
+									eval(enumObject)[propertyName] = propertyValue;
+									result = arrCamera[idx]['expectedResult'];
+								};
+								//var data = enumObject.getProperty(arrCamera[idx]['propertyName']);
+								var data = eval(enumObject)[propertyName];
+							}
+							catch(err){
+								var data = err.message;
+							}
+							expect(data).toEqual(result);
+						});
+					})(i);
+				};
+			});
+
+			describe("set/getProperty and set/getProperties with all combination for "+ camtype +": "+ camname, function() {
+
+				beforeEach(function() {
+					getpropertiesdata ='';
+					getpropertydata ='';
+					callbackstatus = false;
+				});
+
+				it("Call getProperties() with sync callback and hash |" + camtype, function() {
+					runs(function() {
+					    enumObject.setProperties({'compressionFormat':'png','desiredHeight':120,'outputFormat':'dataUri'});
+						enumObject.getProperties(['compressionFormat','desiredHeight','outputFormat'],callbackgetproperties);
+					});
+					waitsFor(function(){
+						return callbackstatus;
+					},500);
+					runs(function() {
+						if(isApplePlatform()){
+							expect(getpropertiesdata).toContain('png');	
+						}else{
+							expect(getpropertiesdata).toContain('jpg');
+						};
+						expect(getpropertiesdata).toContain('120');
+						expect(getpropertiesdata).toContain('dataUri');	
+					});
+				});
+				it("Call getProperties() with anonymous callback and hash |" + camtype, function() {
+					runs(function() {    
+					    enumObject.setProperties({'compressionFormat':'jpg','desiredWidth':480,'outputFormat':'image'});
+						enumObject.getProperties(['compressionFormat','desiredWidth','outputFormat'],function(data){getpropertiesdata = JSON.stringify(data);callbackstatus = true;});
+					});
+					waitsFor(function(){
+						return callbackstatus;
+					},500);	
+					runs(function() {								
+						//expect(getpropertiesdata).toContain('480');
+						expect(getpropertiesdata).toContain('jpg');
+						expect(getpropertiesdata).toContain('image');	
+					});							
+				});
+				it("Call getProperties() without callback |" + camtype, function() {
+					    //enumObject.clearAllProperties();
+					    enumObject.setProperties({'compressionFormat':'png','desiredHeight':640,'outputFormat':'dataUri'});
+						var data = enumObject.getProperties(['compressionFormat','desiredHeight','outputFormat']);
+						getpropertiesdata = JSON.stringify(data);
+						if(isApplePlatform()){
+							expect(getpropertiesdata).toContain('png');
+						}else{
+							expect(getpropertiesdata).toContain('jpg');
+						};
+						//expect(getpropertiesdata).toContain('640');
+						expect(getpropertiesdata).toContain('dataUri');						
+				});
+				it("Call getProperty() with sync callback and property |" + camtype, function() {
+					runs(function() {  									    
+					    enumObject.setProperty('compressionFormat','jpg');
+						enumObject.getProperty("compressionFormat",callbackgetproperty);
+					});
+					waitsFor(function(){
+						return callbackstatus;
+					},500);		
+					runs(function() {	
+						expect(getpropertydata).toEqual('jpg');
+					});										
+				});
+				it("Call getProperty() with anonymous callback and property |" + camtype, function() {
+					runs(function() {
+					    enumObject.setProperty('compressionFormat','png');
+						enumObject.getProperty('compressionFormat',function(data){getpropertydata = data;callbackstatus = true;});
+					});
+					waitsFor(function(){
+						return callbackstatus;
+					},500);		
+					runs(function() {	
+						if(isApplePlatform()){
+							expect(getpropertydata).toEqual('png');
+						}else{
+							expect(getpropertydata).toEqual('jpg')
+						};
+					});								
+				});
+				it("Call getProperty() without callback |" + camtype, function() {
+				    enumObject.setProperty('compressionFormat','jpg');
+					var data = enumObject.getProperty("compressionFormat");
+					getpropertydata = data;
+					expect(getpropertydata).toEqual('jpg');								
+				});
+				it("Call getAllProperties with Anonymous callback |" + camtype, function() {
+					runs(function() {
+					    enumObject.setProperties({'compressionFormat':'jpg','desiredHeight':640,'outputFormat':'dataUri'});
+						enumObject.getAllProperties(function(data){
+							getpropertydata = JSON.stringify(data);
+							callbackstatus = true;
+						});
+					});
+					waitsFor(function(){
+						return callbackstatus;
+					},2000);	
+					runs(function(){
+						expect(getpropertydata).toContain('jpg');
+						//expect(getpropertydata).toContain(640);
+						expect(getpropertydata).toContain('dataUri');
+					});								
+				});
+			});
+
+			describe("Properties with constants ", function() {
+				it("Should set flashMode to FLASH_ON using direct calling method", function() {
+				    enumObject.flashMode = Rho.Camera.FLASH_ON;
+				    expect(enumObject.flashMode).toEqual("on");
+				    expect(enumObject.flashMode).toEqual(Rho.Camera.FLASH_ON);
+				});
+				it("Should set flashMode to FLASH_ON using setproperty calling method", function() {
+				   enumObject.setProperty('flashMode', Rho.Camera.FLASH_ON);
+				   expect(enumObject.flashMode).toEqual("on");
+				   expect(enumObject.getProperty('flashMode')).toEqual(Rho.Camera.FLASH_ON);
+				});
+				it("Should set flashMode to FLASH_ON using setproperties calling method", function() {
+					enumObject.setProperties({
+				        'flashMode': Rho.Camera.FLASH_ON
+				    });
+				    var data = enumObject.getProperties(['flashMode']);
+				    data = data['flashMode'];
+					expect(data).toEqual("on");
+				    expect(data).toEqual(Rho.Camera.FLASH_ON);
+				});
+				it("Should set flashMode to FLASH_OFF using direct calling method", function() {
+				   enumObject.flashMode = Rho.Camera.FLASH_OFF;
+				   expect(enumObject.flashMode).toEqual("off");
+				   expect(enumObject.flashMode).toEqual(Rho.Camera.FLASH_OFF);
+				});
+				it("Should set flashMode to FLASH_OFF using setproperty calling method", function() {
+					enumObject.setProperty('flashMode', Rho.Camera.FLASH_OFF);
+					expect(enumObject.flashMode).toEqual("off");
+					expect(enumObject.getProperty('flashMode')).toEqual(Rho.Camera.FLASH_OFF);
+				});
+				it("Should set flashMode to FLASH_OFF using setproperties calling method", function() {
+					Rho.Camera.setProperties({
+			            'flashMode': Rho.Camera.FLASH_OFF
+			        });
+			        var data = enumObject.getProperties(['flashMode']);
+			        data = data['flashMode'];
+					expect(data).toEqual("off");
+			        expect(data).toEqual(Rho.Camera.FLASH_OFF);
+				});
+				if(!isWindowsMobilePlatform()){
+					it("Should set flashMode to FLASH_AUTO using direct calling method", function() {
+						enumObject.flashMode = Rho.Camera.FLASH_AUTO;
+						expect(enumObject.flashMode).toEqual("auto");
+						expect(enumObject.flashMode).toEqual(Rho.Camera.FLASH_AUTO);
+					});
+					it("Should set flashMode to FLASH_AUTO using setproperty calling method", function() {
+						enumObject.setProperty('flashMode', Rho.Camera.FLASH_AUTO);
+						expect(enumObject.flashMode).toEqual("auto");
+						expect(enumObject.getProperty('flashMode')).toEqual(Rho.Camera.FLASH_AUTO);
+					});
+					it("Should set flashMode to FLASH_AUTO using setproperties calling method", function() {
+						Rho.Camera.setProperties({
+				            'flashMode': Rho.Camera.FLASH_AUTO
+				        });
+				        var data = enumObject.getProperties(['flashMode']);
+				        data = data['flashMode'];
+						expect(data).toEqual("auto");
+				        expect(data).toEqual(Rho.Camera.FLASH_AUTO);
+					});
+					if(!isApplePlatform()){
+						it("Should set flashMode to FLASH_RED_EYE using direct calling method", function() {
+							enumObject.flashMode = Rho.Camera.FLASH_RED_EYE;
+							expect(enumObject.flashMode).toEqual("redEye");
+							expect(enumObject.flashMode).toEqual(Rho.Camera.FLASH_RED_EYE);
+						});
+						it("Should set flashMode to FLASH_RED_EYE using setproperty calling method", function() {
+							enumObject.setProperty('flashMode', Rho.Camera.FLASH_RED_EYE);
+							expect(enumObject.flashMode).toEqual("redEye");
+							expect(enumObject.getProperty('flashMode')).toEqual(Rho.Camera.FLASH_RED_EYE);
+						});
+						it("Should set flashMode to FLASH_RED_EYE using setproperties calling method", function() {
+							Rho.Camera.setProperties({
+					            'flashMode': Rho.Camera.FLASH_RED_EYE
+					        });
+					        var data = enumObject.getProperties(['flashMode']);
+					        data = data['flashMode'];
+							expect(data).toEqual("redEye");
+					        expect(data).toEqual(Rho.Camera.FLASH_RED_EYE);
+						});
+						if(!isWindowsPhone8Platform()){
+							it("Should set flashMode to FLASH_TORCH using direct calling method", function() {
+								enumObject.flashMode = Rho.Camera.FLASH_TORCH;
+								expect(enumObject.flashMode).toEqual("torch");
+								expect(enumObject.flashMode).toEqual(Rho.Camera.FLASH_TORCH);
+							});
+							it("Should set flashMode to FLASH_TORCH using setproperty calling method", function() {
+								enumObject.setProperty('flashMode', Rho.Camera.FLASH_TORCH);
+								expect(enumObject.flashMode).toEqual("torch");
+								expect(enumObject.getProperty('flashMode')).toEqual(Rho.Camera.FLASH_TORCH);
+							});
+							it("Should set flashMode to FLASH_TORCH using setproperties calling method", function() {
+								Rho.Camera.setProperties({
+						            'flashMode': Rho.Camera.FLASH_TORCH
+						        });
+						        var data = enumObject.getProperties(['flashMode']);
+						        data = data['flashMode'];
+								expect(data).toEqual("torch");
+						        expect(data).toEqual(Rho.Camera.FLASH_TORCH);
+							});
+						};
+					};
+				};
+
+				if(isWindowsMobilePlatform() && enumObject.cameraType == 'imager'){
+					it("Should set aimMode to AIM_ON using direct calling method", function() {
+						enumObject.aimMode = Rho.Camera.AIM_ON;
+						expect(enumObject.aimMode).toEqual("on");
+						expect(enumObject.aimMode).toEqual(Rho.Camera.AIM_ON);
+					});
+					it("Should set aimMode to AIM_ON using setproperty calling method", function() {
+						enumObject.setProperty('aimMode', Rho.Camera.AIM_ON);
+						expect(enumObject.aimMode).toEqual("on");
+						expect(enumObject.getProperty('aimMode')).toEqual(Rho.Camera.AIM_ON);
+					});
+					it("Should set aimMode to AIM_ON using setproperties calling method", function() {
+						enumObject.setProperties({
+				            'aimMode': Rho.Camera.AIM_ON
+				        });
+				        var data = enumObject.getProperties(['aimMode']);
+				        data = data['aimMode'];
+						expect(data).toEqual("on");
+				        expect(data).toEqual(Rho.Camera.AIM_ON);
+					});
+					it("Should set aimMode to AIM_OFF using direct calling method", function() {
+						enumObject.aimMode = Rho.Camera.AIM_OFF;
+						expect(enumObject.aimMode).toEqual("off");
+						expect(enumObject.aimMode).toEqual(Rho.Camera.AIM_OFF);
+					});
+					it("Should set aimMode to AIM_OFF using setproperty calling method", function() {
+						enumObject.setProperty('aimMode', Rho.Camera.AIM_OFF);
+						expect(enumObject.aimMode).toEqual("off");
+						expect(enumObject.getProperty('aimMode')).toEqual(Rho.Camera.AIM_OFF);
+					});
+					it("Should set aimMode to AIM_OFF using setproperties calling method", function() {
+						Rho.Camera.setProperties({
+				            'aimMode': Rho.Camera.AIM_OFF
+				        });
+				        var data = enumObject.getProperties(['aimMode']);
+				        data = data['aimMode'];
+						expect(data).toEqual("off");
+				        expect(data).toEqual(Rho.Camera.AIM_OFF);
+					});
+				};
+				if (isAndroidPlatform() || isApplePlatform()){
+					it("Should set colorModel to COLOR_MODEL_RGB using direct calling method", function() {
+						enumObject.colorModel = Rho.Camera.COLOR_MODEL_RGB;
+						expect(enumObject.colorModel).toEqual("rgb");
+						expect(enumObject.colorModel).toEqual(Rho.Camera.COLOR_MODEL_RGB);
+					});
+					it("Should set colorModel to COLOR_MODEL_RGB using setproperty calling method", function() {
+						enumObject.setProperty('colorModel', Rho.Camera.COLOR_MODEL_RGB);
+						expect(enumObject.colorModel).toEqual("rgb");
+						expect(enumObject.getProperty('colorModel')).toEqual(Rho.Camera.COLOR_MODEL_RGB);
+					});
+					it("Should set colorModel to COLOR_MODEL_RGB using setproperties calling method", function() {
+						Rho.Camera.setProperties({
+				            'colorModel': Rho.Camera.COLOR_MODEL_RGB
+				        });
+				        var data = enumObject.getProperties(['colorModel']);
+				        data = data['colorModel'];
+						expect(data).toEqual("rgb");
+				        expect(data).toEqual(Rho.Camera.COLOR_MODEL_RGB);
+					});
+					it("Should set colorModel to COLOR_MODEL_GRAYSCALE using direct calling method", function() {
+						enumObject.colorModel = Rho.Camera.COLOR_MODEL_GRAYSCALE;
+						expect(enumObject.colorModel).toEqual("grayscale");
+						expect(enumObject.colorModel).toEqual(Rho.Camera.COLOR_MODEL_GRAYSCALE);
+					});
+					it("Should set colorModel to COLOR_MODEL_GRAYSCALE using setproperty calling method", function() {
+						enumObject.setProperty('colorModel', Rho.Camera.COLOR_MODEL_GRAYSCALE);
+						expect(enumObject.colorModel).toEqual("grayscale");
+						expect(enumObject.getProperty('colorModel')).toEqual(Rho.Camera.COLOR_MODEL_GRAYSCALE);
+					});
+					it("Should set colorModel to COLOR_MODEL_GRAYSCALE using setproperties calling method", function() {
+						Rho.Camera.setProperties({
+				            'colorModel': Rho.Camera.COLOR_MODEL_GRAYSCALE
+				        });
+				        var data = enumObject.getProperties(['colorModel']);
+				        data = data['colorModel'];
+						expect(data).toEqual("grayscale");
+				        expect(data).toEqual(Rho.Camera.COLOR_MODEL_GRAYSCALE);
+					});
+				};
+				it("Should set outputFormat to OUTPUT_FORMAT_IMAGE using direct calling method", function() {
+					enumObject.outputFormat = Rho.Camera.OUTPUT_FORMAT_IMAGE;
+					expect(enumObject.outputFormat).toEqual("image");
+					expect(enumObject.outputFormat).toEqual(Rho.Camera.OUTPUT_FORMAT_IMAGE);
+				});
+				it("Should set outputFormat to OUTPUT_FORMAT_IMAGE using setproperty calling method", function() {
+					enumObject.setProperty('outputFormat', Rho.Camera.OUTPUT_FORMAT_IMAGE);
+					expect(enumObject.outputFormat).toEqual("image");
+					expect(enumObject.getProperty('outputFormat')).toEqual(Rho.Camera.OUTPUT_FORMAT_IMAGE);
+				});
+				it("Should set outputFormat to OUTPUT_FORMAT_IMAGE using setproperties calling method", function() {
+					Rho.Camera.setProperties({
+			            'outputFormat': Rho.Camera.OUTPUT_FORMAT_IMAGE
+			        });
+			        var data = enumObject.getProperties(['outputFormat']);
+			        data = data['outputFormat'];
+					expect(data).toEqual("image");
+			        expect(data).toEqual(Rho.Camera.OUTPUT_FORMAT_IMAGE);
+				});
+				it("Should set outputFormat to OUTPUT_FORMAT_DATAURI using direct calling method", function() {
+					enumObject.outputFormat = Rho.Camera.OUTPUT_FORMAT_DATAURI;
+					expect(enumObject.outputFormat).toEqual("dataUri");
+					expect(enumObject.outputFormat).toEqual(Rho.Camera.OUTPUT_FORMAT_DATAURI);
+				});
+				it("Should set outputFormat to OUTPUT_FORMAT_DATAURI using setproperty calling method", function() {
+					enumObject.setProperty('outputFormat', Rho.Camera.OUTPUT_FORMAT_DATAURI);
+					expect(enumObject.outputFormat).toEqual("dataUri");
+					expect(enumObject.getProperty('outputFormat')).toEqual(Rho.Camera.OUTPUT_FORMAT_DATAURI);
+				});
+				it("Should set outputFormat to OUTPUT_FORMAT_DATAURI using setproperties calling method", function() {
+					Rho.Camera.setProperties({
+			            'outputFormat': Rho.Camera.OUTPUT_FORMAT_DATAURI
+			        });
+			        var data = enumObject.getProperties(['outputFormat']);
+			        data = data['outputFormat'];
+					expect(data).toEqual("dataUri");
+			        expect(data).toEqual(Rho.Camera.OUTPUT_FORMAT_DATAURI);
+				});
+				it("Should set compressionFormat to COMPRESSION_FORMAT_JPG using direct calling method", function() {
+					enumObject.compressionFormat = Rho.Camera.COMPRESSION_FORMAT_JPG;
+					expect(enumObject.compressionFormat).toEqual("jpg");
+					expect(enumObject.compressionFormat).toEqual(Rho.Camera.COMPRESSION_FORMAT_JPG);
+				});
+				it("Should set compressionFormat to COMPRESSION_FORMAT_JPG using setproperty calling method", function() {
+					enumObject.setProperty('compressionFormat', Rho.Camera.COMPRESSION_FORMAT_JPG);
+					expect(enumObject.compressionFormat).toEqual("jpg");
+					expect(enumObject.getProperty('compressionFormat')).toEqual(Rho.Camera.COMPRESSION_FORMAT_JPG);
+				});
+				it("Should set compressionFormat to COMPRESSION_FORMAT_JPG using setproperties calling method", function() {
+					Rho.Camera.setProperties({
+			            'compressionFormat': Rho.Camera.COMPRESSION_FORMAT_JPG
+			        });
+			        var data = enumObject.getProperties(['compressionFormat']);
+			        data = data['compressionFormat'];
+					expect(data).toEqual("jpg");
+			        expect(data).toEqual(Rho.Camera.COMPRESSION_FORMAT_JPG);
+				});
+				if (isApplePlatform()){
+					it("Should set compressionFormat to COMPRESSION_FORMAT_PNG using direct calling method", function() {
+						enumObject.compressionFormat = Rho.Camera.COMPRESSION_FORMAT_PNG;
+						expect(enumObject.compressionFormat).toEqual("png");
+						expect(enumObject.compressionFormat).toEqual(Rho.Camera.COMPRESSION_FORMAT_PNG);
+					});
+					it("Should set compressionFormat to COMPRESSION_FORMAT_PNG using setproperty calling method", function() {
+						enumObject.setProperty('compressionFormat', Rho.Camera.COMPRESSION_FORMAT_PNG);
+						expect(enumObject.compressionFormat).toEqual("png");
+						expect(enumObject.getProperty('compressionFormat')).toEqual(Rho.Camera.COMPRESSION_FORMAT_PNG);
+					});
+					it("Should set compressionFormat to COMPRESSION_FORMAT_PNG using setproperties calling method", function() {
+						Rho.Camera.setProperties({
+				            'compressionFormat': Rho.Camera.COMPRESSION_FORMAT_PNG
+				        });
+				        var data = enumObject.getProperties(['compressionFormat']);
+				        data = data['compressionFormat'];
+						expect(data).toEqual("png");
+				        expect(data).toEqual(Rho.Camera.COMPRESSION_FORMAT_PNG);
+					});
+				};
+        	});
+		})(enumData[j],arrCAM);
+    };
+});
+
+describe("Camera JS edge API Test", function() {
+	var	enableflag = false;
+	var	disableflag = false;
+	var getpropertiesdata ='';
+	var getpropertydata ='';
+    var enumData = Rho.Camera.enumerate();
+    var callbackstatus = false;
+	var getcallbackdata = '';
+    var callbackgetproperties = function (data){
+		getpropertiesdata = JSON.stringify(data);
+		callbackstatus = true;
+	}
+	var callbackgetproperty = function (data){
+		getpropertydata = data;
+		callbackstatus = true;
+	}
+
+    for (var j = 0;j<enumData.length;j++){
+		var arrCAM = getApplicableInvalidProperties(enumData[j]);
+		(function(enumObject,arrCamera){
+			var camname = enumObject.getProperty('cameraType');
+			var camtype = enumObject.getProperty('ID');
+
+			describe("Camera property using set/getProperty for "+ camtype +": "+ camname, function() {
+				for (var i=0;i<arrCamera.length;i++){
+					(function(idx){
+						it(arrCamera[idx]['testName'], function() {
+                            enumObject.setProperty(arrCamera[idx]['propertyName'],arrCamera[idx]['DefaultValue']);
+						    enumObject.setProperty(arrCamera[idx]['propertyName'],arrCamera[idx]['propertyValue']);	
+							var data = enumObject.getProperty(arrCamera[idx]['propertyName']);
+							expect(data).toEqual(arrCamera[idx]['expectedResult']);
+						});
+					})(i);
+				};
+			});
+
+			describe("Camera property Using set/getProperties for "+ camtype +": "+ camname, function() {
+				for (var i=0;i<arrCamera.length;i++){
+					(function(idx){
+						it(arrCamera[idx]['testName'], function() {
+							var propertyName = arrCamera[idx]['propertyName'];
+							var propertyValue = arrCamera[idx]['DefaultValue'];
+							propertyValue = arrCamera[idx]['propertyValue'];
+                            if(propertyValue == ""){
+								var strProperty = {propertyName :""};
+							}
+							else if (propertyValue == 'true')
+								var strProperty = '{"'+propertyName+'" : '+true+' }';
+							else if (propertyValue == 'false')
+								var strProperty = '{"'+propertyName+'" : '+false+' }';
+							else if (!isNaN(propertyValue)){
+								propertyValue = parseInt(propertyValue);
+								var strProperty = '{"'+propertyName+'" :'+propertyValue+'}';
+							}
+							else{
+								var strProperty = '{"'+propertyName+'" : "'+propertyValue+'"}';
+							};
+							var objProperty;
+							if(propertyValue != ""){
+							 objProperty = JSON.parse(strProperty);
+							};
+							enumObject.setProperties(objProperty);
+							var strGetProperty = '["'+arrCamera[idx]['propertyName']+'"]';
+							var objGetProperty = JSON.parse(strGetProperty);
+							var data = enumObject.getProperties(objGetProperty);
+							data = data[arrCamera[idx]['propertyName']];
+							expect(data).toEqual(arrCamera[idx]['expectedResult']);
+						});
+					})(i);
+				};
+			});
+		})(enumData[j],arrCAM);
+    };
+});
+
+describe("Enumerate Camera ", function() {
+	var enumObjCount = false;
+	var enumCallback = function (enumobj){
+		enumobj.length>0 ? enumObjCount=true : enumObjCount=false
 	};
+
+	beforeEach(function() {
+		enumObjCount = false;
+	});
+
+	it("VT285-014: Enumerate Camera callback as function", function() {
+		runs(function() {
+			Rho.Camera.enumerate(enumCallback);
+		});
+		waitsFor(function(){
+			return enumObjCount;
+		},5000);
+		runs(function(){
+			expect(enumObjCount).toEqual(true);
+		});
+	});
+	it("VT285-016: Enumerate Camera with anonymous function as callback", function() {
+		runs(function() {
+			Rho.Camera.enumerate(function(obj){
+				enumCallback(obj);
+			});
+		});
+		waitsFor(function(){
+			return enumObjCount;
+		},5000);
+		runs(function(){
+			expect(enumObjCount).toEqual(true);
+		});
+ 	});
+	it("VT285-017: Enumerate Camera without callback (Synchronous Access)", function() {
+		runs(function() {
+			var obj = Rho.Camera.enumerate();
+			callBackfired = enumCallback(obj);
+			expect(enumObjCount).toEqual(true);
+		});
+ 	});
 });
