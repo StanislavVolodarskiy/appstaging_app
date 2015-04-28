@@ -1,1 +1,0 @@
-(function(){String.prototype.toLowerCase=function(a){return __rhoNativeApi.toLowerCase(this)}})();

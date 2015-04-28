@@ -1,67 +1,60 @@
-sdkversion: "5.0.2"
-#app_type: "rhoelements"
-name: "appstaging_app"
+#sdk: ../../../../rhodes
+paths:
+  extensions:
+
+# Please use relative pathes
+
+  - ../../../extensions
+#  - ../../../../Motorola-Extensions/lib/commonAPI
+#  - ../../../../rhoconnect-client/ext/
+
+
+#  - C:/DevelopmentTools/rhomobile/rhodes/lib/extensions
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/extensions
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/lib/commonAPI
+#  - C:/DevelopmentTools/rhomobile/rhoconnect-client/ext
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/build/ci/extensions
+#  - C:/DevelopmentTools/rhomobile/Motorola-Extensions/build/ci/extensions
+#  - C:/Neon/git/Motorola-Extensions/build/ci/extensions
+#  - B:/git/Motorola-Extensions/build/ci/extensions
+
+#  neon:
+#  - C:/Users/fpc843/workspace/fpc843_rhoelements_dev/NEON
+
+sdkversion: 3.3.2
+name: auto_common_spec
+app_type: rhoelements
 version: 1.0
-vendor: "rhomobile"
-build: "debug"
-applog: "rholog.txt"
+vendor: rhomobile
+build: release
+bbver: 4.6
+applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator7.1
-  provisionprofile: "Mikhail Dev"
-  codesignidentity: iPhone Developer
-  entitlements: ""
-  BundleIdentifier: com.rhomobile.appstaging_app
-  BundleURLScheme: appstaging_app
-  production:
-    mobileprovision_file: "./production/Mikhail_Dev.mobileprovision"
-    certificate_file: "./production/certs.p12"
-    certificate_password: "mytestpassword"
+  sdk: iphonesimulator8.1
+  provisionprofile:
+  codesignidentity:
+  entitlements:
+  BundleIdentifier: com.rhomobile.apigeneratorspec
+  BundleURLScheme: apigeneratorspec
+  extensions: ["nativeBridgeTest", "barcode", "platformBridgeTest", "appEvents", "indicators", "sensor", "screenorientation", "audiocapture", "mediacapture"]
 wp8:
-  productid: "3c8abc20-c8a3-0131-0e3c-3c075403c5b4"
+  productid: 'b6479381-42a8-0130-78de-3caec51bd50e'
+  extensions: ["mediacapture"]
+symbian:
+  uid: '0xe1a1ef92'
 android:
-  abis:
-  - arm
-  - x86
-  extensions:
-    - barcode
-    - nfc
-    - digest
-    - digest-md5
-    - digest-sha1
-    - pdf-writer
-    - thread
-    - digest-sha2
-    - openssl.so
-    - openssl
-    - ezcrypto
-    - audiocapture
+  version: 4.2.2
+  extensions: ["nativeBridgeTest", "emdk3-manager", "barcode", "screenorientation", "instrumentation", "cardreader", "indicators", "sensor", "websocket", "eventsource", "audiocapture", 'screenorientation', "mediacapture"]
   capabilities:
-    - push
-    - network_state
-    - sdcard
-    - calendar
-  version: "4.2.2"
+  - native_browser
 wm:
-  extensions:
-    - digest
-    - digest-md5
-    - digest-sha1
-    - digest-sha2
-    - openssl.so
-    - openssl
-    - ezcrypto
-    - rhoconnect-client
-extensions:
-  - json
-  - rhoxml
-  - rhoconnect-client
-  - rhodes_translator
-capabilities:
-  - gps
-  - pim
-  - camera
-  - vibrate
-  - phone
-  - bluetooth
-  - calendar
+  #webkit_outprocess: 1
+  #use_shared_runtime: yes
+  #sdk: MC3000c50b (ARMV4I)
+  #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+  extensions: ["barcode", "screenorientation", "instrumentation", "cardreader", "indicators", "sensor", "audiocapture", "smartCradle", "mediacapture"]
+#capabilities:
+#- non_motorola_device
+
+extensions: ["genPropBag", "logCapture"]
