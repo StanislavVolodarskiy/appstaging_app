@@ -1,7 +1,6 @@
 # startup page for your application
-#start_path = 'file://%APP_PATH%/app/specRunner.html'
-# start_path = '/app/specRunner.html'
-start_path = '/app/index.html' 
+start_path = '/app'
+#aaa
 
 # path to the options page (in this case handled by javascript)
 options_path = '/app/Settings'
@@ -14,9 +13,9 @@ rhobundle_zip_pwd = nil
 
 # Rhodes log properties
 # log level
-# 0-trace, 1-info(app level), 3-warnings, 4-errors
+# 0-trace, 1-info(app level), 2-warnings, 3-errors
 # for production set to 3
-MinSeverity  = 1
+MinSeverity  = 1 
 
 # enable copy log messages to standard output, useful for debugging
 LogToOutput = 1
@@ -28,7 +27,7 @@ LogCategories = *
 ExcludeLogCategories = 
 
 # max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
-MaxLogFileSize=5000000
+MaxLogFileSize=50000
 
 # turn on local http server traces, off by default
 #net_trace = 0
@@ -41,14 +40,14 @@ MaxLogFileSize=5000000
 logserver = 'http://rhologs.heroku.com' 
 
 # log file prefix - contain human-readable text
-logname='api_generator_spec'
+logname='appstaging_app'
 
 # Keep track of the last visited page
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
 
-# sync server url, typically this will look like 'http://<hostname>:<port>/application'
-# for example: 'http://localhost:9292/application'
+# sync server url, typically this will look like 'http://<hostname>:<port>'
+# for example: 'http://localhost:9292'
 syncserver = ''
 sync_poll_interval=0
 
@@ -59,6 +58,9 @@ sync_poll_interval=0
 # default 1 for Android up to Rhodes 2.2.5.
 # on all other platforms and on Android from Rhodes >2.2.5 default 0
 #full_screen = 1
+
+# show top menu on Windows desktop in full screen mode (default is 0=don't show top menu)
+#w32_fullscreen_menu = 1
 
 # disable the Android page loading progress bar
 #disable_loading_indication = 0
@@ -72,7 +74,7 @@ sync_poll_interval=0
 #wm_show_statusbar = 1
 
 # disable screen rotation (enabled by default) - disable possible for ANDROID and iPhone ONLY
-disable_screen_rotation = 0
+#disable_screen_rotation = 1
 
 # disable close app when pressing back on home screen on blackberry
 #bb_disable_closebyback = 0
@@ -88,6 +90,4 @@ jqtouch_mode=1
 
 splash_screen='zoom'
 
-# properties for spec testing
-intProp = 42
-stringProp = 'abc' 
+use_bb_full_browser=6
